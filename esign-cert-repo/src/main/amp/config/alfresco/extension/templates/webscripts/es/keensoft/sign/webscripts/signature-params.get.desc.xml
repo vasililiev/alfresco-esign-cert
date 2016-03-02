@@ -1,0 +1,12 @@
+<webscript>
+	<shortname>Get Signature parameters</shortname>
+	<description>
+		Returns signature parameters from global properties
+	</description>
+	<family>keensoft</family>
+	<url>/keensoft/sign/signature-params</url>
+	<url>/keensoft/sign/signature-params.json</url>
+	<format default="json">any</format>
+	<authentication>user</authentication>
+	<transaction>none</transaction>
+</webscript>

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="esign-cert-repo.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/${project.artifactId}/model/sign-model.xml</value>
+            </list>
+        </property>
+    </bean>
+	
+	<bean id="signDocumentWebscripts.resources"
+		class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+		<property name="resourceBundles">
+			<list>
+				<value>alfresco.module.${project.artifactId}.messages.sign-webscripts</value>
+			</list>
+		</property>
+	</bean>
+	
+    <bean id="mimetypeConfigService" class="org.springframework.extensions.config.xml.XMLConfigService" init-method="init">
+        <constructor-arg>
+            <bean class="org.springframework.extensions.config.source.UrlConfigSource">
+                <constructor-arg>
+                    <list>
+                        <value>classpath:alfresco/mimetype/mimetype-map.xml</value>
+                        <value>classpath:alfresco/mimetype/mimetype-map-openoffice.xml</value>
+                        <value>alfresco/module/${project.artifactId}/mimetype/mimetype-map-xsig.xml</value>
+                        <value>alfresco/module/${project.artifactId}/mimetype/mimetype-map-csig.xml</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+    </bean>
+ 
+
+</beans>
