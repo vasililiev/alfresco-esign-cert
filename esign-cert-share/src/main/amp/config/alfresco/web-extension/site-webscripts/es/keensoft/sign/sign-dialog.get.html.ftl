@@ -33,8 +33,8 @@
 	      			submitButton.click();
 	      		}
 	      				 
-                function show_error() {
-                    YAHOO.util.Dom.get("info").innerHTML="${msg("error.unknown")}";
+                function show_error(errorType, errorMessage) {
+                    YAHOO.util.Dom.get("info").innerHTML="${msg("error.unknown")} - " + errorType + ":" + errorMessage; 
                     var submitButton = YAHOO.util.Dom.get("signDialog-cancel");
                     submitButton.click();
                 }
