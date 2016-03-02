@@ -45,7 +45,7 @@ Downloading the ready-to-deploy-plugin
 The binary distribution is made of two amp files:
 
 * [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.0-SNAPSHOT/esign-cert-repo.amp)
-* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.0-SNAPSHOT/esign-cert-share-0.9.0.amp)
+* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.0-SNAPSHOT/esign-cert-share.amp)
 
 You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
@@ -60,7 +60,7 @@ Signing the applet
 ------------------
 You can download plain applet from http://forja-ctt.administracionelectronica.gob.es/web/clienteafirma
 
-Oracle [jarsigner](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/jarsigner.html) can be used to perform a signature on [miniapplet-full_1_4.jar](https://github.com/keensoft/alfresco-firma-pdf/blob/master/src/main/amp/web/sign/miniapplet-full_1_4.jar). To deploy this change, just replace current JAR for your signed JAR and rebuild the artifacts.
+Oracle [jarsigner](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/jarsigner.html) can be used to perform a signature on [miniapplet-full_1_4.jar](https://github.com/keensoft/alfresco-esign-cert/raw/master/esign-cert-share/src/main/amp/web/sign/miniapplet-full_1_4.jar). To deploy this change, just replace current JAR for your signed JAR and rebuild the artifacts.
 
 Running under SSL
 -----------------
