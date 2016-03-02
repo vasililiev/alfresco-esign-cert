@@ -20,7 +20,7 @@ Mac OS
 Linux Ubuntu
 * Mozilla Firefox: Applet
 
-**Notice**: this module superseed previous one [alfresco-firma-pdf](https://github.com/keensoft/alfresco-firma-pdf)
+**Notice**: this module supersede previous one [alfresco-firma-pdf](https://github.com/keensoft/alfresco-firma-pdf)
 
 This module uses a software digital certificate or a cryptographic hardware supported by a smart card.
 
