@@ -117,3 +117,15 @@ Serial number: 1022640006
 Caducity: Tue 12 Apr 2016
 Issuer: OU=FNMT Clase 2 CA, O=FNMT, C=ES
 ```
+
+Todo
+----------------------
+Pending features to be included (aka "wishlist"):
+* Signatures associated to workflow steps (Activiti)
+* Many electronic signatures over the same document (parallel and sequential procedures)
+* Massive signature over a set of documents in one action
+* Signature formats: XAdES, ODF, OOXML
+* Visible signature including custom image for PAdES
+* Signature verification
+* AdES signatures elevation
+* LTA integration
