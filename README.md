@@ -2,23 +2,35 @@ esign-cert
 ==================
 Provides an Alfresco Share action for signing PDF files (PAdES-BES format) and any other file (CAdES-BES format detached) via java applet (@firma miniApplet, opensource at https://github.com/ctt-gob-es/clienteafirma) or local application AutoFirma by protocol (http://forja-ctt.administracionelectronica.gob.es/web/clienteafirma) where applets are not possible (i. e. Google Chrome).
 
-**AutoFirma** local application is currently supported only for Windows, but Mac OS and Linux versions are on the roadmap. This Windows application shall be installed before using the addon.
+**AutoFirma** local application for computers is currently supported only for Windows, but Mac OS and Linux versions are on the roadmap. This Windows application shall be installed before using the addon.
+
+**Cliente movil @firma** local application for devices is currently supported for iOS and Android:
+* Google Play - [Cliente movil @firma](https://play.google.com/store/apps/details?id=es.gob.afirma)
+* App Store - [Cliente @firma movil](https://itunes.apple.com/us/app/cliente-firma-movil/id627410001?mt=8) 
 
 Currently following browser and OS combinations are supported:
 
 Windows
-* IE Edge: not supported
+* IE Edge: not supported by now
 * IE Classic: Local application
 * Google Chrome: Local application
 * Mozilla Firefox: Local application / Applet
 
 Mac OS 
-* Google Chrome: Local application (not yet available)
 * Mozilla Firefox: Applet
 * Apple Safari: Applet
+* Google Chrome: Local application (not yet available)
 
 Linux Ubuntu
 * Mozilla Firefox: Applet
+* Google Chrome: Local application (not yet available)
+
+iOS
+* Apple Safari: Local application
+* Google Chrome: Local application
+
+Android
+* Google Chrome: Local application
 
 **Notice**: this module supersede previous one [alfresco-firma-pdf](https://github.com/keensoft/alfresco-firma-pdf)
 
