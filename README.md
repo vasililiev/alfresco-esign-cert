@@ -4,7 +4,7 @@ Provides an Alfresco Share action for signing PDF files (PAdES-BES format) and a
 
 **IMPORTANT NOTICE**
 
-If you installed [alfresco-firma-pdf](https://github.com/keensoft/alfresco-firma-pdf), it's required to uninstall it before using **esign-cert** addon. You can use 
+If you installed [alfresco-firma-pdf](https://github.com/keensoft/alfresco-firma-pdf), it's required to uninstall it before using **esign-cert** addon.
 
 ```bash
 java -jar alfresco-mmt.jar uninstall sign-document ../tomcat/webapps/alfresco.war
