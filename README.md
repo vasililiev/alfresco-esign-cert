@@ -2,6 +2,17 @@ esign-cert
 ==================
 Provides an Alfresco Share action for signing PDF files (PAdES-BES format) and any other file (CAdES-BES format detached) via java applet (@firma miniApplet, opensource at https://github.com/ctt-gob-es/clienteafirma) or local application AutoFirma by protocol (http://forja-ctt.administracionelectronica.gob.es/web/clienteafirma) where applets are not possible (i. e. Google Chrome).
 
+**IMPORTANT NOTICE**
+
+If you installed [alfresco-firma-pdf](https://github.com/keensoft/alfresco-firma-pdf), it's required to uninstall it before using **esign-cert** addon. You can use 
+
+```bash
+java -jar alfresco-mmt.jar uninstall sign-document ../tomcat/webapps/alfresco.war
+java -jar alfresco-mmt.jar uninstall sign-document-share ../tomcat/webapps/share.war
+```
+
+## esign-cert features
+
 **AutoFirma** local application for computers is currently supported only for Windows, but Mac OS and Linux versions are on the roadmap. This Windows application shall be installed before using the addon.
 
 **Cliente movil @firma** local application for devices is currently supported for iOS and Android:
