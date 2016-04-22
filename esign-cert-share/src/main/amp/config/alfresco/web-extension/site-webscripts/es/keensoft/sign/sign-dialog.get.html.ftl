@@ -26,8 +26,9 @@
 	      	<script type="text/javascript">//<![CDATA[
 	      		
 	      		function show_signed(signatureBase64, certificateB64) {
-	      		    signedData.value = signatureBase64;
-	      		    signerData.value = certificateB64;
+      				var signForm = YAHOO.util.Dom.get("signDialog-form");
+	      		    signForm.signedData.value = signatureBase64;
+	      		    signForm.signerData.value = certificateB64;
 	      			YAHOO.util.Dom.get("info").innerHTML="${msg("signed")}";
                     var submitButton = YAHOO.util.Dom.get("signDialog-ok");
 	      			submitButton.click();
@@ -55,11 +56,17 @@
 	      			}		  		
 	      		};	
 	      		
+      			var running = false;
 	      		function doSign() {
-      				window.clearInterval(loadingSignComponentInterval);
       				var signFrame = YAHOO.util.Dom.get("sign-frame");
       				var signForm = YAHOO.util.Dom.get("signDialog-form");
-      				signFrame.contentWindow.doSign(signForm.dataToSign, signForm.signedData, signForm.signerRole);
+	      			if(signFrame.contentWindow.doSign) {
+      				    window.clearInterval(loadingSignComponentInterval);
+      				    if (!running) {
+	      				    running = true;
+	      				    signFrame.contentWindow.doSign(signForm.dataToSign, signForm.signedData, signForm.signerRole);
+	      				}
+      				}
 	      		};
 	      		
 			//]]></script>	
