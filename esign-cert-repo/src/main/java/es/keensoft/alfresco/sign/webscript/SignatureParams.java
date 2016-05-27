@@ -22,6 +22,11 @@ public class SignatureParams extends AbstractWebScript {
 	private String paramsCades;
 	private String paramsPades;
 	private String signatureAlg;
+	private String firstSignaturePosition;
+	private String secondSignaturePosition;
+	private String thirdSignaturePosition;
+	private String fourthSignaturePosition;
+	private String fifthSignaturePosition;
 	
 	@Override
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -34,6 +39,12 @@ public class SignatureParams extends AbstractWebScript {
 			response.setParamsCades(paramsCades);
 			response.setParamsPades(paramsPades);
 			response.setSignatureAlg(signatureAlg);
+			
+			response.setFirstSignaturePosition(firstSignaturePosition);
+			response.setSecondSignaturePosition(secondSignaturePosition);
+			response.setThirdSignaturePosition(thirdSignaturePosition);
+			response.setFourthSignaturePosition(fourthSignaturePosition);
+			response.setFifthSignaturePosition(fifthSignaturePosition);
 			
 		} catch (Exception e) {
 			
@@ -58,4 +69,23 @@ public class SignatureParams extends AbstractWebScript {
 		this.signatureAlg = signatureAlg;
 	}
 
+	public void setFirstSignaturePosition(String firstSignaturePosition) {
+		this.firstSignaturePosition = firstSignaturePosition;
+	}
+	
+	public void setSecondSignaturePosition(String secondSignaturePosition) {
+		this.secondSignaturePosition = secondSignaturePosition;
+	}
+	
+	public void setThirdSignaturePosition(String thirdSignaturePosition) {
+		this.thirdSignaturePosition = thirdSignaturePosition;
+	}
+	
+	public void setFourthSignaturePosition(String fourthSignaturePosition) {
+		this.fourthSignaturePosition = fourthSignaturePosition;
+	}
+	
+	public void setFifthSignaturePosition(String fifthSignaturePosition) {
+		this.fifthSignaturePosition = fifthSignaturePosition;
+	}
 }

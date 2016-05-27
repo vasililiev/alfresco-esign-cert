@@ -58,6 +58,116 @@
 		</forms>
 	</config>
 	
+	<config evaluator="aspect" condition="sign:firstSignature">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="sign:1date" />
+					<show id="sign:1certificatePrincipal" />
+                    <show id="sign:1certificateIssuer" />
+				</field-visibility>
+				<appearance>
+					<set id="signature1" appearance="bordered-panel" label-id="panel.first_signature" />
+					<field id="sign:1date" set="signature1" label-id="prop.date">
+						<control template="/org/alfresco/components/form/controls/date.ftl">
+							<control-param name="showTime">true</control-param>
+						</control>
+					</field>
+                    <field id="sign:1certificatePrincipal" set="signature1" label-id="prop.certificate.principal" />
+                    <field id="sign:1certificateIssuer" set="signature1" label-id="prop.certificate.issuer" />
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="aspect" condition="sign:secondSignature">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="sign:2date" />
+					<show id="sign:2certificatePrincipal" />
+                    <show id="sign:2certificateIssuer" />
+				</field-visibility>
+				<appearance>
+					<set id="signature2" appearance="bordered-panel" label-id="panel.second_signature" />
+					<field id="sign:2date" set="signature" label-id="prop.date">
+						<control template="/org/alfresco/components/form/controls/date.ftl">
+							<control-param name="showTime">true</control-param>
+						</control>
+					</field>
+                    <field id="sign:2certificatePrincipal" set="signature2" label-id="prop.certificate.principal" />
+                    <field id="sign:2certificateIssuer" set="signature2" label-id="prop.certificate.issuer" />
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="aspect" condition="sign:thirdSignature">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="sign:3date" />
+					<show id="sign:3certificatePrincipal" />
+                    <show id="sign:3certificateIssuer" />
+				</field-visibility>
+				<appearance>
+					<set id="signature3" appearance="bordered-panel" label-id="panel.third_signature" />
+					<field id="sign:3date" set="signature3" label-id="prop.date">
+						<control template="/org/alfresco/components/form/controls/date.ftl">
+							<control-param name="showTime">true</control-param>
+						</control>
+					</field>
+                    <field id="sign:3certificatePrincipal" set="signature3" label-id="prop.certificate.principal" />
+                    <field id="sign:3certificateIssuer" set="signature3" label-id="prop.certificate.issuer" />
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="aspect" condition="sign:fourthSignature">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="sign:4date" />
+					<show id="sign:4certificatePrincipal" />
+                    <show id="sign:4certificateIssuer" />
+				</field-visibility>
+				<appearance>
+					<set id="signature4" appearance="bordered-panel" label-id="panel.fourth_signature" />
+					<field id="sign:4date" set="signature4" label-id="prop.date">
+						<control template="/org/alfresco/components/form/controls/date.ftl">
+							<control-param name="showTime">true</control-param>
+						</control>
+					</field>
+                    <field id="sign:4certificatePrincipal" set="signature4" label-id="prop.certificate.principal" />
+                    <field id="sign:4certificateIssuer" set="signature4" label-id="prop.certificate.issuer" />
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
+	<config evaluator="aspect" condition="sign:fifthSignature">
+		<forms>
+			<form>
+				<field-visibility>
+					<show id="sign:5date" />
+					<show id="sign:5certificatePrincipal" />
+                    <show id="sign:5certificateIssuer" />
+				</field-visibility>
+				<appearance>
+					<set id="signature5" appearance="bordered-panel" label-id="panel.fifth_signature" />
+					<field id="sign:5date" set="signature5" label-id="prop.date">
+						<control template="/org/alfresco/components/form/controls/date.ftl">
+							<control-param name="showTime">true</control-param>
+						</control>
+					</field>
+                    <field id="sign:5certificatePrincipal" set="signature5" label-id="prop.certificate.principal" />
+                    <field id="sign:5certificateIssuer" set="signature5" label-id="prop.certificate.issuer" />
+				</appearance>
+			</form>
+		</forms>
+	</config>
+	
 	<config evaluator="string-compare" condition="DocumentLibrary">
 		<indicators>
 			<indicator id="indicator.signed" index="1"
@@ -80,9 +190,13 @@
 				<param name="failureMessage">message.sign-action.failure</param>
 				<param name="mimeType">pdf</param>
 				<evaluator>evaluator.doclib.action.pdfMimetype</evaluator>
-				<evaluator negate="true">evaluator.doclib.action.signed</evaluator>
-				<evaluator negate="true">evaluator.doclib.action.signature</evaluator>
+				<evaluator negate="true">evaluator.doclib.action.allSigners</evaluator>
+				<!-- This lines are commented in order for the action to be displayed for multiple signing -->
+				
+				<!-- <evaluator negate="true">evaluator.doclib.action.signed</evaluator>
+				<evaluator negate="true">evaluator.doclib.action.signature</evaluator> -->
 			</action>
+			
 			<action id="sign-action-other" icon="sign-action-icon" type="javascript"
 				label="actions.sign-action.other">
 				<permissions>

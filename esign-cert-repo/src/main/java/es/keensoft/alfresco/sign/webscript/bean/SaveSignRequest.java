@@ -8,6 +8,7 @@ public class SaveSignRequest {
 	private String signedData;
 	private String signerData;
 	private String mimeType;
+	private String signerPostition;
 
 	public String getNodeRef() {
 		return nodeRef;
@@ -55,6 +56,14 @@ public class SaveSignRequest {
 
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
+	}
+	
+	public String getSignerPostition() {
+		return signerPostition;
+	}
+
+	public void setSignerPostition(String signerPostition) {
+		this.signerPostition = signerPostition;
 	}
 
 }

@@ -50,11 +50,14 @@ public class SaveSign extends AbstractWebScript {
 	private static final String CADES_BES_DETACHED = "CAdES-BES Detached";
 	private static final String PADES = "PAdES";
 	private static final String CSIG_EXTENSION = ".CSIG";
-
+	
 	private CheckOutCheckInService checkOutCheckInService;
 	private VersionService versionService;
 	private ContentService contentService;
 	private NodeService nodeService;
+	
+	//For PAdES - To access the signature postition
+	private static String SIGNATURE_POSTITION = null;
 	
 	@Override
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -71,19 +74,25 @@ public class SaveSign extends AbstractWebScript {
 			if(StringUtils.isBlank(request.getSignedData()) || request.getSignedData().equals(JS_UNDEFINED))
 				throw new WebScriptException("Signed data is empty or null.");
 			
+			//Set the signature position (if PAdES)
+			if(!StringUtils.isBlank(request.getSignerPostition()) && !request.getSignerPostition().equals(JS_UNDEFINED)) {
+				SIGNATURE_POSTITION = request.getSignerPostition();
+			}
+			
+			//Signature aspect definition
 		    Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>();
-            if(StringUtils.isBlank(request.getSignerData()) || request.getSignerData().equals(JS_UNDEFINED)) {
+            
+		    if(StringUtils.isBlank(request.getSignerData()) || request.getSignerData().equals(JS_UNDEFINED)) {
 				log.warn("Signer data is empty or null.");
 			} else {
 				CertificateFactory cf = CertificateFactory.getInstance("X.509");
 				ByteArrayInputStream bais = new ByteArrayInputStream(Base64.decodeBase64(request.getSignerData()));
 				X509Certificate certificate = (X509Certificate) cf.generateCertificate(bais);
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());
+				//Add the certificate properties depending on the signature position/algorithm
+				aspectSignatureProperties = setCertificateProperties(certificate);
 			}
-
+		    
+		    //Document to sign
 			NodeRef nodeRef = new NodeRef(request.getNodeRef());
 			
 			Map<QName, Serializable> aspectSignedProperties = new HashMap<QName, Serializable>();
@@ -137,17 +146,46 @@ public class SaveSign extends AbstractWebScript {
 			versionService.ensureVersioningEnabled(nodeRef, null);
 			
 			NodeRef chkout = checkOutCheckInService.checkout(nodeRef);
-			
+			if(SIGNATURE_POSTITION != null) {
+				
+			}
 			ContentWriter writer = contentService.getWriter(chkout, ContentModel.PROP_CONTENT, true);
 			OutputStream contentOutputStream = writer.getContentOutputStream();
 			IOUtils.write(Base64.decodeBase64(signedData), contentOutputStream);
 			contentOutputStream.close();
 			
 			checkOutCheckInService.checkin(chkout, getVersionProperties());
-						
-		    aspectProperties.put(SignModel.PROP_FORMAT, PADES);
-		    aspectProperties.put(SignModel.PROP_DATE, new Date());
-			nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE, aspectProperties);
+			
+			//Set the proper aspect depending on the position
+			switch(SIGNATURE_POSTITION) {
+			    case "1":
+				    aspectProperties.put(SignModel.PROP_FORMAT1, PADES);
+				    aspectProperties.put(SignModel.PROP_DATE1, new Date());
+					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE1, aspectProperties);
+			    	break;
+			    case "2":
+				    aspectProperties.put(SignModel.PROP_FORMAT2, PADES);
+				    aspectProperties.put(SignModel.PROP_DATE2, new Date());
+					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE2, aspectProperties);
+			    	break;
+			    case "3":
+				    aspectProperties.put(SignModel.PROP_FORMAT3, PADES);
+				    aspectProperties.put(SignModel.PROP_DATE3, new Date());
+					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE3, aspectProperties);
+			    	break;
+			    case "4":
+				    aspectProperties.put(SignModel.PROP_FORMAT4, PADES);
+				    aspectProperties.put(SignModel.PROP_DATE4, new Date());
+					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE4, aspectProperties);
+			    	break;
+			    case "5":
+				    aspectProperties.put(SignModel.PROP_FORMAT5, PADES);
+				    aspectProperties.put(SignModel.PROP_DATE5, new Date());
+					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE5, aspectProperties);
+			    	break;
+			    default:
+			    	throw new WebScriptException("No signature position is defined");
+			}
 			
 		} finally {
 			if (checkOutCheckInService.isCheckedOut(nodeRef)) {
@@ -157,6 +195,56 @@ public class SaveSign extends AbstractWebScript {
 	
 	}
 
+	/**
+	 * Return a HaspMap with the properties of the signature certificate depending on the chosen position
+	 * If there isn't a position selected it will se the default properties of the aspect
+	 * @param certificate X509Certificate object of the certificate
+	 * @return HashMap with the key-value aspect properties
+	 */
+	private Map<QName, Serializable> setCertificateProperties(X509Certificate certificate) {
+	    Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>(); 
+	    switch(SIGNATURE_POSTITION) {
+		    case "1":
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL1, certificate.getSubjectX500Principal().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER1, certificate.getSerialNumber().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER1, certificate.getNotAfter());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER1, certificate.getIssuerX500Principal().toString());
+		    	break;
+		    case "2":
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL2, certificate.getSubjectX500Principal().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER2, certificate.getSerialNumber().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER2, certificate.getNotAfter());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER2, certificate.getIssuerX500Principal().toString());
+		    	break;
+		    case "3":
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL3, certificate.getSubjectX500Principal().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER3, certificate.getSerialNumber().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER3, certificate.getNotAfter());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER3, certificate.getIssuerX500Principal().toString());
+		    	break;
+		    case "4":
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL4, certificate.getSubjectX500Principal().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER4, certificate.getSerialNumber().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER4, certificate.getNotAfter());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER4, certificate.getIssuerX500Principal().toString());
+		    	break;
+		    case "5":
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL5, certificate.getSubjectX500Principal().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER5, certificate.getSerialNumber().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER5, certificate.getNotAfter());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER5, certificate.getIssuerX500Principal().toString());
+		    	break;
+		    default:
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
+			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());
+		    	break;
+	    }
+	    
+	    return aspectSignatureProperties;
+	}
+	
 	private Map<String, Serializable> getVersionProperties() {
 		Map<String, Serializable> versionProperties = new HashMap<String, Serializable>();
 		versionProperties.put(VersionModel.PROP_VERSION_TYPE, VersionType.MAJOR);		

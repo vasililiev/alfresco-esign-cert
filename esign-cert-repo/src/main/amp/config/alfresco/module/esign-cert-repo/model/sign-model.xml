@@ -12,6 +12,7 @@
 	</namespaces>
 	
     <aspects>
+    	<!-- General signature properties -->
         <aspect name="sign:signed">
             <properties>
                 <property name="sign:type">
@@ -32,6 +33,7 @@
                </association>
             </associations>
         </aspect>
+        <!-- CAdES signature (All except PAdED) -->
         <aspect name="sign:signature">
             <properties>
                 <property name="sign:format">
@@ -66,6 +68,127 @@
                 </target>               
                </association>
             </associations>
+        </aspect>
+        
+        <!--  
+        Since there can be multiple signers, the defined aspects are holding
+        same property values. We want to keep data for each signer so we need 
+        multiple aspects which will hold the same properties
+        
+        This means that that search for certaing signer needs to be extended to iterate through 
+        each signer to find all the documents he has signed. 
+        
+        If there are any better solution, I'm up for refactoring :)
+         -->
+        <aspect name="sign:firstSignature">
+            <properties>
+                <property name="sign:1format">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:1date">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:1certificatePrincipal">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:1certificateNotAfter">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:1certificateSerialNumber">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:1certificateIssuer">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="sign:secondSignature">
+            <properties>
+                <property name="sign:2format">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:2date">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:2certificatePrincipal">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:2certificateNotAfter">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:2certificateSerialNumber">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:2certificateIssuer">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="sign:thirdSignature">
+            <properties>
+                <property name="sign:3format">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:3date">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:3certificatePrincipal">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:3certificateNotAfter">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:3certificateSerialNumber">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:3certificateIssuer">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="sign:fourthSignature">
+            <properties>
+                <property name="sign:4format">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:4date">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:4certificatePrincipal">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:4certificateNotAfter">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:4certificateSerialNumber">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:4certificateIssuer">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+        <aspect name="sign:fifthSignature">
+            <properties>
+                <property name="sign:5format">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:5date">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:5certificatePrincipal">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:5certificateNotAfter">
+                    <type>d:date</type>
+                </property>
+                <property name="sign:5certificateSerialNumber">
+                    <type>d:text</type>
+                </property>
+                <property name="sign:5certificateIssuer">
+                    <type>d:text</type>
+                </property>
+            </properties>
         </aspect>
     </aspects>	
 	
