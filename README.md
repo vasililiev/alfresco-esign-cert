@@ -59,7 +59,7 @@ The current version has been developed using Alfresco 5.1 and Alfresco SDK 2.1.1
 Browser compatibility: 100% supported (refer previous paragraph)
 
 **Languages**
-Currently provided in English and Spanish.
+Currently provided in English,Spanish and Macedonian.
 
 ***No original Alfresco resources have been overwritten***
 
@@ -135,11 +135,11 @@ Caducity: Tue 12 Apr 2016
 Issuer: OU=FNMT Clase 2 CA, O=FNMT, C=ES
 ```
 
+PDF files can be signed up to 5 times on 5 different positions. Once a PDF is signed in a certain position that position is no longer awailable for signing. The signatures positions are defined in **alfresco-global.properties**.
 Todo
 ----------------------
 Pending features to be included (aka "wishlist"):
 * Signatures associated to workflow steps (Activiti)
-* Many electronic signatures over the same document (parallel and sequential procedures)
 * Massive signature over a set of documents in one action
 * Signature formats: XAdES, ODF, OOXML
 * Visible signature including custom image for PAdES
