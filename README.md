@@ -135,7 +135,7 @@ Caducity: Tue 12 Apr 2016
 Issuer: OU=FNMT Clase 2 CA, O=FNMT, C=ES
 ```
 
-PDF files can be signed up to 5 times on 5 different positions. Once a PDF is signed in a certain position that position is no longer awailable for signing. The signatures positions are defined in **alfresco-global.properties**.
+PDF files can be signed up to 5 times on 5 different positions. Once a PDF is signed in a certain position that position is no longer available for signing. The signatures positions are defined in **alfresco-global.properties**.
 Todo
 ----------------------
 Pending features to be included (aka "wishlist"):
