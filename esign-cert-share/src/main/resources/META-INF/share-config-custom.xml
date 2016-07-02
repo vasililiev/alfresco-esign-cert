@@ -11,11 +11,7 @@
 					<set id="signed" appearance="bordered-panel" label-id="panel.signed" />
 					<field id="sign:type" set="signed" label-id="prop.type" read-only="true"/>
 					<field id="sign:signatureAssoc" set="signed" label-id="prop.signature.assoc" read-only="true">
-			        	<control template="/org/alfresco/components/form/controls/association.ftl">
-							<control-param name="displayMode">items</control-param>
-							<control-param name="showTargetLink">true</control-param>
-							<control-param name="compactMode">true</control-param>
-						</control>                    
+			        	<control template="/es/keensoft/components/form/controls/properties-association.ftl"/>
 					</field>
 				</appearance>
 			</form>
@@ -50,14 +46,14 @@
 			        	<control template="/org/alfresco/components/form/controls/association.ftl">
 							<control-param name="displayMode">items</control-param>
 							<control-param name="showTargetLink">true</control-param>
-							<control-param name="compactMode">true</control-param>
+							<control-param name="compactMode">false</control-param>
 						</control>                    
 					</field>
 				</appearance>
 			</form>
 		</forms>
 	</config>
-	
+		
 	<config evaluator="string-compare" condition="DocumentLibrary">
 		<indicators>
 			<indicator id="indicator.signed" index="1"
@@ -80,9 +76,13 @@
 				<param name="failureMessage">message.sign-action.failure</param>
 				<param name="mimeType">pdf</param>
 				<evaluator>evaluator.doclib.action.pdfMimetype</evaluator>
-				<evaluator negate="true">evaluator.doclib.action.signed</evaluator>
-				<evaluator negate="true">evaluator.doclib.action.signature</evaluator>
+				<evaluator negate="true">evaluator.doclib.action.allSigners</evaluator>
+				<!-- This lines are commented in order for the action to be displayed for multiple signing -->
+				
+				<!-- <evaluator negate="true">evaluator.doclib.action.signed</evaluator>
+				<evaluator negate="true">evaluator.doclib.action.signature</evaluator> -->
 			</action>
+			
 			<action id="sign-action-other" icon="sign-action-icon" type="javascript"
 				label="actions.sign-action.other">
 				<permissions>

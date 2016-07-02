@@ -1,3 +1,14 @@
 
 deploy.sh
 /.idea/
+esign-cert-repo/alf_data_dev
+esign-cert-share/alf_data_dev
+esign-cert-repo/target
+esign-cert-share/target
+esign-cert-repo/.settings
+esign-cert-share/.settings
+esign-cert-share/.classpath
+*.DS_Store
+*.classpath
+esign-cert-repo/.project
+esign-cert-share/.project

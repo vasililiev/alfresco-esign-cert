@@ -6,19 +6,21 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.cmr.coci.CheckOutCheckInService;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.version.VersionService;
-import org.alfresco.service.cmr.version.VersionType;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
@@ -41,7 +43,7 @@ import es.keensoft.alfresco.sign.webscript.bean.SaveSignRequest;
 
 public class SaveSign extends AbstractWebScript {
 	
-	private static Log log = LogFactory.getLog(Base64NodeContent.class);
+	private static Log log = LogFactory.getLog(SaveSign.class);
 	
 	private static final String RETURN_CODE_OK = "OK";	
 	private static final String MIMETYPE_CMS = "application/cms";
@@ -50,7 +52,7 @@ public class SaveSign extends AbstractWebScript {
 	private static final String CADES_BES_DETACHED = "CAdES-BES Detached";
 	private static final String PADES = "PAdES";
 	private static final String CSIG_EXTENSION = ".CSIG";
-
+	
 	private CheckOutCheckInService checkOutCheckInService;
 	private VersionService versionService;
 	private ContentService contentService;
@@ -72,19 +74,20 @@ public class SaveSign extends AbstractWebScript {
 				throw new WebScriptException("Signed data is empty or null.");
 			
 		    Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>();
-            if(StringUtils.isBlank(request.getSignerData()) || request.getSignerData().equals(JS_UNDEFINED)) {
+            
+		    if(StringUtils.isBlank(request.getSignerData()) || request.getSignerData().equals(JS_UNDEFINED)) {
 				log.warn("Signer data is empty or null.");
 			} else {
 				CertificateFactory cf = CertificateFactory.getInstance("X.509");
 				ByteArrayInputStream bais = new ByteArrayInputStream(Base64.decodeBase64(request.getSignerData()));
 				X509Certificate certificate = (X509Certificate) cf.generateCertificate(bais);
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());
+				aspectSignatureProperties = setCertificateProperties(certificate);
 			}
-
+		    
+		    //Document to sign
 			NodeRef nodeRef = new NodeRef(request.getNodeRef());
+			
+			versionService.ensureVersioningEnabled(nodeRef, null);
 			
 			Map<QName, Serializable> aspectSignedProperties = new HashMap<QName, Serializable>();
 			if (request.getMimeType().equals(PDF_EXTENSION)) { // PAdES
@@ -130,40 +133,65 @@ public class SaveSign extends AbstractWebScript {
 		
 	}
 	
-	private void storeSignPDF(NodeRef nodeRef, String signedData, Map<QName, Serializable> aspectProperties) throws IOException {
+	private void storeSignPDF(NodeRef originalNodeRef, String signedData, Map<QName, Serializable> aspectProperties) throws IOException {
 		
-		try {
-			
-			versionService.ensureVersioningEnabled(nodeRef, null);
-			
-			NodeRef chkout = checkOutCheckInService.checkout(nodeRef);
-			
-			ContentWriter writer = contentService.getWriter(chkout, ContentModel.PROP_CONTENT, true);
-			OutputStream contentOutputStream = writer.getContentOutputStream();
-			IOUtils.write(Base64.decodeBase64(signedData), contentOutputStream);
-			contentOutputStream.close();
-			
-			checkOutCheckInService.checkin(chkout, getVersionProperties());
-						
-		    aspectProperties.put(SignModel.PROP_FORMAT, PADES);
-		    aspectProperties.put(SignModel.PROP_DATE, new Date());
-			nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE, aspectProperties);
-			
-		} finally {
-			if (checkOutCheckInService.isCheckedOut(nodeRef)) {
-				checkOutCheckInService.cancelCheckout(nodeRef);
-			}
-		}
+		String originalFileName = nodeService.getProperty(originalNodeRef, ContentModel.PROP_NAME).toString();
+		String signatureFileName = FilenameUtils.getBaseName(originalFileName) + "-" + System.currentTimeMillis() + "-" + PADES;
+		
+		// Creating a node reference without type (no content and no folder), remains invisible for Share
+		NodeRef signatureNodeRef = nodeService.createNode(
+				nodeService.getPrimaryParent(originalNodeRef).getParentRef(),
+				ContentModel.ASSOC_CONTAINS, 
+				QName.createQName(signatureFileName), 
+				ContentModel.TYPE_CMOBJECT).getChildRef();
+		
+		nodeService.createAssociation(originalNodeRef, signatureNodeRef, SignModel.ASSOC_SIGNATURE);
+		nodeService.createAssociation(signatureNodeRef, originalNodeRef, SignModel.ASSOC_DOC);
+		
+	    aspectProperties.put(SignModel.PROP_FORMAT, PADES);
+	    aspectProperties.put(SignModel.PROP_DATE, new Date());
+		nodeService.addAspect(signatureNodeRef, SignModel.ASPECT_SIGNATURE, aspectProperties);
 	
 	}
-
-	private Map<String, Serializable> getVersionProperties() {
-		Map<String, Serializable> versionProperties = new HashMap<String, Serializable>();
-		versionProperties.put(VersionModel.PROP_VERSION_TYPE, VersionType.MAJOR);		
-		versionProperties.put(VersionModel.PROP_DESCRIPTION, I18NUtil.getMessage("version.description")); 		
-		return versionProperties;
+	
+	public NodeRef getSignatureFolder(NodeRef nodeRef, String folderName) {
+		
+		NodeRef folderNodeRef = null;
+		
+		List<ChildAssociationRef> childs = nodeService.getChildAssocs(nodeRef, new HashSet<QName>(Arrays.asList(ContentModel.TYPE_FOLDER)));
+		for (ChildAssociationRef child : childs) {
+			String name = nodeService.getProperty(child.getChildRef(), ContentModel.PROP_NAME).toString();
+			if (folderName.equals(name)) {
+				folderNodeRef = child.getChildRef();
+				break;
+			}
+		}
+		
+		if (folderNodeRef == null) {
+			Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+			properties.put(ContentModel.PROP_NAME, folderName);
+			folderNodeRef = nodeService.createNode(
+					nodeService.getPrimaryParent(nodeRef).getParentRef(), 
+					ContentModel.ASSOC_CONTAINS,
+					QName.createQName(folderName), 
+					ContentModel.TYPE_FOLDER,
+					properties).getChildRef();
+		}
+		
+		return folderNodeRef;
+		
 	}
-
+	
+	private Map<QName, Serializable> setCertificateProperties(X509Certificate certificate) {
+	    Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>(); 
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());
+	    return aspectSignatureProperties;
+	}
+	
+	
 	public CheckOutCheckInService getCheckOutCheckInService() {
 		return checkOutCheckInService;
 	}

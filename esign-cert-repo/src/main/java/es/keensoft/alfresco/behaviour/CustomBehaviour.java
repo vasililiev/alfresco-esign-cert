@@ -1,99 +1,145 @@
 package es.keensoft.alfresco.behaviour;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.content.ContentServicePolicies;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.repo.site.SiteModel;
-import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.ContentData;
+import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeRef.Status;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.version.VersionService;
-import org.alfresco.service.cmr.version.VersionType;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.AcroFields.Item;
+import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfPKCS7;
+import com.itextpdf.text.pdf.PdfReader;
 
 import es.keensoft.alfresco.model.SignModel;
+import es.keensoft.alfresco.sign.webscript.SaveSign;
 
-public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationPolicy, ContentServicePolicies.OnContentUpdatePolicy {
-	
-	private static final String DOCUMENT_LIBRARY_COMPONENT_ID = "documentLibrary";
+public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationPolicy, NodeServicePolicies.OnCreateNodePolicy {
 	
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
 	private VersionService versionService;
+	private ContentService contentService;
+	
+	private static final String PADES = "PAdES";
+	private static Log log = LogFactory.getLog(CustomBehaviour.class);
 	
 	public void init() {
 		policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
 				SignModel.ASPECT_SIGNATURE, new JavaBehaviour(this, "onDeleteAssociation", 
 				NotificationFrequency.TRANSACTION_COMMIT));
-		policyComponent.bindClassBehaviour(ContentServicePolicies.OnContentUpdatePolicy.QNAME, 
-				ContentModel.TYPE_CONTENT, new JavaBehaviour(this, "onContentUpdate", 
-				NotificationFrequency.TRANSACTION_COMMIT));
+		log.debug("Enter create node");
+		policyComponent.bindClassBehaviour(
+		        NodeServicePolicies.OnCreateNodePolicy.QNAME,
+		        ContentModel.PROP_CONTENT,
+		        new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT)
+		    );
 	}
 	
+
+	@Override
+	public void onCreateNode(ChildAssociationRef childNodeRef) {
+
+		log.debug("Enter create node");
+		NodeRef node = childNodeRef.getChildRef();
+		ContentData contentData = (ContentData) nodeService.getProperty(node, ContentModel.PROP_CONTENT);
+		//Do this check only if the uploaded document is a PDF
+		if(contentData.getMimetype().equalsIgnoreCase("application/pdf")) {
+
+			log.debug("Is PDF");
+			try {
+				ArrayList<Map<QName, Serializable>> signatures = getDigitalSignatures(node);
+				//Add the aspect asociation
+				if(signatures != null) {
+					for(Map<QName, Serializable> aspectProperties : signatures) {
+						String originalFileName = nodeService.getProperty(node, ContentModel.PROP_NAME).toString();
+						String signatureFileName = FilenameUtils.getBaseName(originalFileName) + "-" 
+						+ System.currentTimeMillis() + "-" + PADES;
+					
+						// Creating a node reference without type (no content and no folder), remains invisible for Share
+						NodeRef signatureNodeRef = nodeService.createNode(
+								nodeService.getPrimaryParent(node).getParentRef(),
+								ContentModel.ASSOC_CONTAINS, 
+								QName.createQName(signatureFileName), 
+								ContentModel.TYPE_CMOBJECT).getChildRef();
+						
+						nodeService.createAssociation(node, signatureNodeRef, SignModel.ASSOC_SIGNATURE);
+						nodeService.createAssociation(signatureNodeRef, node, SignModel.ASSOC_DOC);
+						
+					    aspectProperties.put(SignModel.PROP_FORMAT, PADES);
+						nodeService.addAspect(signatureNodeRef, SignModel.ASPECT_SIGNATURE, aspectProperties);
+					}
+				}
+			}
+			catch(Exception ex) {
+				log.error(ex.toString());
+			}
+		}
+	}
+
 	@Override
 	public void onDeleteAssociation(AssociationRef nodeAssocRef) {
-		
 		// Delete SIGNED aspect on SIGNATURE deletion
 		if (nodeService.exists(nodeAssocRef.getTargetRef())) {
 		    nodeService.removeAspect(nodeAssocRef.getTargetRef(), SignModel.ASPECT_SIGNED);
 		}
-		
 	}
 	
-	// Required for correct versioning sequence in Alfresco 4.2.c
-	// Create initial version on upload new content
-	@Override
-	public void onContentUpdate(NodeRef nodeRef, boolean newContent) {
+	public ArrayList<Map<QName, Serializable>> getDigitalSignatures(NodeRef node) throws IOException, KeyStoreException, Exception, CertificateException {
 		
-		Status nodeStatus = nodeService.getNodeStatus(nodeRef);
-		if (nodeStatus != null && !nodeStatus.isDeleted()) {
-			
-            // Exclude Thumbnails, Comments...
-			if (nodeService.getType(nodeService.getPrimaryParent(nodeRef).getParentRef()).isMatch(ContentModel.TYPE_FOLDER)) {
+		ContentReader contentReader = contentService.getReader(node, ContentModel.PROP_CONTENT);
+		InputStream is = contentReader.getContentInputStream();
 		
-				// Only apply to contents on Document Library
-				NodeRef grandpaRef = nodeService.getPrimaryParent(nodeRef).getParentRef();
-				while (nodeService.getProperty(grandpaRef, SiteModel.PROP_COMPONENT_ID) == null || 
-					  !nodeService.getProperty(grandpaRef, SiteModel.PROP_COMPONENT_ID).equals(DOCUMENT_LIBRARY_COMPONENT_ID)) {
-					grandpaRef = nodeService.getPrimaryParent(grandpaRef).getParentRef();
-					if (grandpaRef == null) break;
-				}
-				
-				if (grandpaRef != null) {
-					
-				    // Only for new documents
-				    if (!versionService.isVersioned(nodeRef)) {
-				    
-						// Create initial version
-					    Map<String, Serializable> versionProperties = new HashMap<String, Serializable>();
-					    versionProperties.put(VersionModel.PROP_VERSION_TYPE, VersionType.MAJOR);
-					    
-						if (!nodeService.hasAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE)) {
-							Map<QName, Serializable> versionProps = new HashMap<QName, Serializable>();
-							versionProps.put(ContentModel.PROP_AUTO_VERSION_PROPS, new Boolean(false));
-							nodeService.addAspect(nodeRef, ContentModel.ASPECT_VERSIONABLE, versionProps);
-						}
-						
-						versionService.createVersion(nodeRef, versionProperties);
-						
-				    }
-					    
-				}
-				
-            }
-		}
+		PdfReader reader = new PdfReader(is);
+        AcroFields af = reader.getAcroFields();
+        ArrayList<String> names = af.getSignatureNames();
+        if(names == null || names.isEmpty()) return null;
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null, null);
+        ArrayList<Map<QName, Serializable>> aspects = new ArrayList<Map<QName, Serializable>>();
+        for (String name : names) {
+            PdfPKCS7 pk = af.verifySignature(name);
+            X509Certificate certificate = pk.getSigningCertificate();
+           
+            Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>(); 
+            aspectSignatureProperties.put(SignModel.PROP_DATE, DateTime.parse(pk.getSignDate().toString()));
+    		aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
+    	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
+    	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
+    	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());   
+    	    aspects.add(aspectSignatureProperties);
+        }
+		return aspects;
 	}
 	
-
 	public PolicyComponent getPolicyComponent() {
 		return policyComponent;
 	}
@@ -117,5 +163,12 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 	public void setVersionService(VersionService versionService) {
 		this.versionService = versionService;
 	}
-
+	
+	public ContentService getContentService() {
+		return contentService;
+	}
+	
+	public void setContentService(ContentService contentService) {
+		this.contentService = contentService;
+	}
 }

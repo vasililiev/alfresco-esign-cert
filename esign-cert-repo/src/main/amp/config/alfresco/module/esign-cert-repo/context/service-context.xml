@@ -22,6 +22,7 @@
 		  <property name="policyComponent" ref="policyComponent" />
 		  <property name="nodeService" ref="NodeService" />
 		  <property name="versionService" ref="VersionService" />
+		  <property name="contentService" ref="ContentService" />
 	</bean>
     	
 </beans>
