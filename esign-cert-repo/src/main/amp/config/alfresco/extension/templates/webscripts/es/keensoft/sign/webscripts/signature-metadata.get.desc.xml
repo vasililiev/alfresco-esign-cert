@@ -1,0 +1,12 @@
+<webscript>
+	<shortname>Get Signature metadata</shortname>
+	<description>
+		Returns signature metadata for a given noderef
+	</description>
+	<family>keensoft</family>
+	<url>/keensoft/sign/signature-metadata</url>
+	<url>/keensoft/sign/signature-metadata.json</url>
+	<format default="json">any</format>
+	<authentication>user</authentication>
+	<transaction>none</transaction>
+</webscript>

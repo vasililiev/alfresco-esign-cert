@@ -6,19 +6,21 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.version.VersionModel;
 import org.alfresco.service.cmr.coci.CheckOutCheckInService;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.version.VersionService;
-import org.alfresco.service.cmr.version.VersionType;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FilenameUtils;
@@ -41,7 +43,7 @@ import es.keensoft.alfresco.sign.webscript.bean.SaveSignRequest;
 
 public class SaveSign extends AbstractWebScript {
 	
-	private static Log log = LogFactory.getLog(Base64NodeContent.class);
+	private static Log log = LogFactory.getLog(SaveSign.class);
 	
 	private static final String RETURN_CODE_OK = "OK";	
 	private static final String MIMETYPE_CMS = "application/cms";
@@ -55,9 +57,6 @@ public class SaveSign extends AbstractWebScript {
 	private VersionService versionService;
 	private ContentService contentService;
 	private NodeService nodeService;
-	
-	//For PAdES - To access the signature postition
-	private static String SIGNATURE_POSTITION = null;
 	
 	@Override
 	public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -74,12 +73,6 @@ public class SaveSign extends AbstractWebScript {
 			if(StringUtils.isBlank(request.getSignedData()) || request.getSignedData().equals(JS_UNDEFINED))
 				throw new WebScriptException("Signed data is empty or null.");
 			
-			//Set the signature position (if PAdES)
-			if(!StringUtils.isBlank(request.getSignerPostition()) && !request.getSignerPostition().equals(JS_UNDEFINED)) {
-				SIGNATURE_POSTITION = request.getSignerPostition();
-			}
-			
-			//Signature aspect definition
 		    Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>();
             
 		    if(StringUtils.isBlank(request.getSignerData()) || request.getSignerData().equals(JS_UNDEFINED)) {
@@ -88,12 +81,13 @@ public class SaveSign extends AbstractWebScript {
 				CertificateFactory cf = CertificateFactory.getInstance("X.509");
 				ByteArrayInputStream bais = new ByteArrayInputStream(Base64.decodeBase64(request.getSignerData()));
 				X509Certificate certificate = (X509Certificate) cf.generateCertificate(bais);
-				//Add the certificate properties depending on the signature position/algorithm
 				aspectSignatureProperties = setCertificateProperties(certificate);
 			}
 		    
 		    //Document to sign
 			NodeRef nodeRef = new NodeRef(request.getNodeRef());
+			
+			versionService.ensureVersioningEnabled(nodeRef, null);
 			
 			Map<QName, Serializable> aspectSignedProperties = new HashMap<QName, Serializable>();
 			if (request.getMimeType().equals(PDF_EXTENSION)) { // PAdES
@@ -139,119 +133,65 @@ public class SaveSign extends AbstractWebScript {
 		
 	}
 	
-	private void storeSignPDF(NodeRef nodeRef, String signedData, Map<QName, Serializable> aspectProperties) throws IOException {
+	private void storeSignPDF(NodeRef originalNodeRef, String signedData, Map<QName, Serializable> aspectProperties) throws IOException {
 		
-		try {
-			
-			versionService.ensureVersioningEnabled(nodeRef, null);
-			
-			NodeRef chkout = checkOutCheckInService.checkout(nodeRef);
-			if(SIGNATURE_POSTITION != null) {
-				
-			}
-			ContentWriter writer = contentService.getWriter(chkout, ContentModel.PROP_CONTENT, true);
-			OutputStream contentOutputStream = writer.getContentOutputStream();
-			IOUtils.write(Base64.decodeBase64(signedData), contentOutputStream);
-			contentOutputStream.close();
-			
-			checkOutCheckInService.checkin(chkout, getVersionProperties());
-			
-			//Set the proper aspect depending on the position
-			switch(SIGNATURE_POSTITION) {
-			    case "1":
-				    aspectProperties.put(SignModel.PROP_FORMAT1, PADES);
-				    aspectProperties.put(SignModel.PROP_DATE1, new Date());
-					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE1, aspectProperties);
-			    	break;
-			    case "2":
-				    aspectProperties.put(SignModel.PROP_FORMAT2, PADES);
-				    aspectProperties.put(SignModel.PROP_DATE2, new Date());
-					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE2, aspectProperties);
-			    	break;
-			    case "3":
-				    aspectProperties.put(SignModel.PROP_FORMAT3, PADES);
-				    aspectProperties.put(SignModel.PROP_DATE3, new Date());
-					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE3, aspectProperties);
-			    	break;
-			    case "4":
-				    aspectProperties.put(SignModel.PROP_FORMAT4, PADES);
-				    aspectProperties.put(SignModel.PROP_DATE4, new Date());
-					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE4, aspectProperties);
-			    	break;
-			    case "5":
-				    aspectProperties.put(SignModel.PROP_FORMAT5, PADES);
-				    aspectProperties.put(SignModel.PROP_DATE5, new Date());
-					nodeService.addAspect(nodeRef, SignModel.ASPECT_SIGNATURE5, aspectProperties);
-			    	break;
-			    default:
-			    	throw new WebScriptException("No signature position is defined");
-			}
-			
-		} finally {
-			if (checkOutCheckInService.isCheckedOut(nodeRef)) {
-				checkOutCheckInService.cancelCheckout(nodeRef);
-			}
-		}
+		String originalFileName = nodeService.getProperty(originalNodeRef, ContentModel.PROP_NAME).toString();
+		String signatureFileName = FilenameUtils.getBaseName(originalFileName) + "-" + System.currentTimeMillis() + "-" + PADES;
+		
+		// Creating a node reference without type (no content and no folder), remains invisible for Share
+		NodeRef signatureNodeRef = nodeService.createNode(
+				nodeService.getPrimaryParent(originalNodeRef).getParentRef(),
+				ContentModel.ASSOC_CONTAINS, 
+				QName.createQName(signatureFileName), 
+				ContentModel.TYPE_CMOBJECT).getChildRef();
+		
+		nodeService.createAssociation(originalNodeRef, signatureNodeRef, SignModel.ASSOC_SIGNATURE);
+		nodeService.createAssociation(signatureNodeRef, originalNodeRef, SignModel.ASSOC_DOC);
+		
+	    aspectProperties.put(SignModel.PROP_FORMAT, PADES);
+	    aspectProperties.put(SignModel.PROP_DATE, new Date());
+		nodeService.addAspect(signatureNodeRef, SignModel.ASPECT_SIGNATURE, aspectProperties);
 	
 	}
-
-	/**
-	 * Return a HaspMap with the properties of the signature certificate depending on the chosen position
-	 * If there isn't a position selected it will se the default properties of the aspect
-	 * @param certificate X509Certificate object of the certificate
-	 * @return HashMap with the key-value aspect properties
-	 */
+	
+	public NodeRef getSignatureFolder(NodeRef nodeRef, String folderName) {
+		
+		NodeRef folderNodeRef = null;
+		
+		List<ChildAssociationRef> childs = nodeService.getChildAssocs(nodeRef, new HashSet<QName>(Arrays.asList(ContentModel.TYPE_FOLDER)));
+		for (ChildAssociationRef child : childs) {
+			String name = nodeService.getProperty(child.getChildRef(), ContentModel.PROP_NAME).toString();
+			if (folderName.equals(name)) {
+				folderNodeRef = child.getChildRef();
+				break;
+			}
+		}
+		
+		if (folderNodeRef == null) {
+			Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+			properties.put(ContentModel.PROP_NAME, folderName);
+			folderNodeRef = nodeService.createNode(
+					nodeService.getPrimaryParent(nodeRef).getParentRef(), 
+					ContentModel.ASSOC_CONTAINS,
+					QName.createQName(folderName), 
+					ContentModel.TYPE_FOLDER,
+					properties).getChildRef();
+		}
+		
+		return folderNodeRef;
+		
+	}
+	
 	private Map<QName, Serializable> setCertificateProperties(X509Certificate certificate) {
 	    Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>(); 
-	    switch(SIGNATURE_POSTITION) {
-		    case "1":
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL1, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER1, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER1, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER1, certificate.getIssuerX500Principal().toString());
-		    	break;
-		    case "2":
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL2, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER2, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER2, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER2, certificate.getIssuerX500Principal().toString());
-		    	break;
-		    case "3":
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL3, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER3, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER3, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER3, certificate.getIssuerX500Principal().toString());
-		    	break;
-		    case "4":
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL4, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER4, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER4, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER4, certificate.getIssuerX500Principal().toString());
-		    	break;
-		    case "5":
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL5, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER5, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER5, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER5, certificate.getIssuerX500Principal().toString());
-		    	break;
-		    default:
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
-			    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());
-		    	break;
-	    }
-	    
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
+	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());
 	    return aspectSignatureProperties;
 	}
 	
-	private Map<String, Serializable> getVersionProperties() {
-		Map<String, Serializable> versionProperties = new HashMap<String, Serializable>();
-		versionProperties.put(VersionModel.PROP_VERSION_TYPE, VersionType.MAJOR);		
-		versionProperties.put(VersionModel.PROP_DESCRIPTION, I18NUtil.getMessage("version.description")); 		
-		return versionProperties;
-	}
-
+	
 	public CheckOutCheckInService getCheckOutCheckInService() {
 		return checkOutCheckInService;
 	}
