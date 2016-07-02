@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.coci.CheckOutCheckInService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -137,6 +138,13 @@ public class SaveSign extends AbstractWebScript {
 		
 		String originalFileName = nodeService.getProperty(originalNodeRef, ContentModel.PROP_NAME).toString();
 		String signatureFileName = FilenameUtils.getBaseName(originalFileName) + "-" + System.currentTimeMillis() + "-" + PADES;
+		
+		// Update signature
+		ContentWriter writer = contentService.getWriter(originalNodeRef, ContentModel.PROP_CONTENT, true);
+		writer.setMimetype(MimetypeMap.MIMETYPE_PDF);
+		OutputStream contentOutputStream = writer.getContentOutputStream();
+		IOUtils.write(Base64.decodeBase64(signedData), contentOutputStream);
+		contentOutputStream.close();
 		
 		// Creating a node reference without type (no content and no folder), remains invisible for Share
 		NodeRef signatureNodeRef = nodeService.createNode(

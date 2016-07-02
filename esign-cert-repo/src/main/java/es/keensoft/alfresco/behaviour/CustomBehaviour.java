@@ -5,16 +5,14 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
@@ -34,13 +32,10 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 
 import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.AcroFields.Item;
-import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfPKCS7;
 import com.itextpdf.text.pdf.PdfReader;
 
 import es.keensoft.alfresco.model.SignModel;
-import es.keensoft.alfresco.sign.webscript.SaveSign;
 
 public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationPolicy, NodeServicePolicies.OnCreateNodePolicy {
 	
@@ -56,7 +51,6 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 		policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
 				SignModel.ASPECT_SIGNATURE, new JavaBehaviour(this, "onDeleteAssociation", 
 				NotificationFrequency.TRANSACTION_COMMIT));
-		log.debug("Enter create node");
 		policyComponent.bindClassBehaviour(
 		        NodeServicePolicies.OnCreateNodePolicy.QNAME,
 		        ContentModel.PROP_CONTENT,
@@ -68,13 +62,12 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 	@Override
 	public void onCreateNode(ChildAssociationRef childNodeRef) {
 
-		log.debug("Enter create node");
 		NodeRef node = childNodeRef.getChildRef();
 		ContentData contentData = (ContentData) nodeService.getProperty(node, ContentModel.PROP_CONTENT);
+		
 		//Do this check only if the uploaded document is a PDF
-		if(contentData.getMimetype().equalsIgnoreCase("application/pdf")) {
+		if(contentData.getMimetype().equalsIgnoreCase(MimetypeMap.MIMETYPE_PDF)) {
 
-			log.debug("Is PDF");
 			try {
 				ArrayList<Map<QName, Serializable>> signatures = getDigitalSignatures(node);
 				//Add the aspect asociation
