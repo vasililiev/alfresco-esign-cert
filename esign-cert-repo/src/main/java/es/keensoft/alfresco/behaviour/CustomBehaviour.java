@@ -8,11 +8,12 @@ import java.security.KeyStoreException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.policy.JavaBehaviour;
@@ -29,7 +30,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
 
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfPKCS7;
@@ -51,6 +51,7 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 		policyComponent.bindAssociationBehaviour(NodeServicePolicies.OnDeleteAssociationPolicy.QNAME, 
 				SignModel.ASPECT_SIGNATURE, new JavaBehaviour(this, "onDeleteAssociation", 
 				NotificationFrequency.TRANSACTION_COMMIT));
+		log.debug("Enter create node");
 		policyComponent.bindClassBehaviour(
 		        NodeServicePolicies.OnCreateNodePolicy.QNAME,
 		        ContentModel.PROP_CONTENT,
@@ -62,12 +63,13 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
 	@Override
 	public void onCreateNode(ChildAssociationRef childNodeRef) {
 
+		log.debug("Enter create node");
 		NodeRef node = childNodeRef.getChildRef();
 		ContentData contentData = (ContentData) nodeService.getProperty(node, ContentModel.PROP_CONTENT);
-		
 		//Do this check only if the uploaded document is a PDF
-		if(contentData.getMimetype().equalsIgnoreCase(MimetypeMap.MIMETYPE_PDF)) {
+		if(contentData.getMimetype().equalsIgnoreCase("application/pdf")) {
 
+			log.debug("Is PDF");
 			try {
 				ArrayList<Map<QName, Serializable>> signatures = getDigitalSignatures(node);
 				//Add the aspect asociation
@@ -122,8 +124,9 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
             PdfPKCS7 pk = af.verifySignature(name);
             X509Certificate certificate = pk.getSigningCertificate();
            
+            //Set aspect properties for each signature
             Map<QName, Serializable> aspectSignatureProperties = new HashMap<QName, Serializable>(); 
-            aspectSignatureProperties.put(SignModel.PROP_DATE, DateTime.parse(pk.getSignDate().toString()));
+            aspectSignatureProperties.put(SignModel.PROP_DATE, convertCalendarToDate(pk.getSignDate()));
     		aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_PRINCIPAL, certificate.getSubjectX500Principal().toString());
     	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_SERIAL_NUMBER, certificate.getSerialNumber().toString());
     	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_NOT_AFTER, certificate.getNotAfter());
@@ -131,6 +134,20 @@ public class CustomBehaviour implements NodeServicePolicies.OnDeleteAssociationP
     	    aspects.add(aspectSignatureProperties);
         }
 		return aspects;
+	}
+	
+	
+	@SuppressWarnings({"deprecation" })
+	private Date convertCalendarToDate(Calendar cal) {
+		Date date = new Date();
+		date.setDate(cal.get(Calendar.DATE));
+		date.setMonth(cal.get(Calendar.MONTH));
+		date.setYear(cal.get(Calendar.YEAR) - 1900);
+		date.setHours(cal.get(Calendar.HOUR));
+		date.setMinutes(cal.get(Calendar.MINUTE));
+		date.setSeconds(cal.get(Calendar.SECOND));
+		System.out.println(date);
+		return date;
 	}
 	
 	public PolicyComponent getPolicyComponent() {
