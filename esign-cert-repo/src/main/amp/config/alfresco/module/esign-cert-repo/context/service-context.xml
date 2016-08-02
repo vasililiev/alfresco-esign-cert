@@ -24,5 +24,19 @@
 		  <property name="versionService" ref="VersionService" />
 		  <property name="contentService" ref="ContentService" />
 	</bean>
+	
+	<bean id="deleteRelatedDocumentsBehaviour" class="es.keensoft.alfresco.behaviour.TransactionalDeleteBehaviour" init-method="init">
+    	<property name="policyComponent" ref="policyComponent"/>
+    	<property name="nodeService" ref="NodeService"/>
+    	<property name="transactionService" ref="TransactionService" />
+    	<property name="threadPoolExecutor" ref="relatedDocumentsThreadPoolExecutor" />
+	</bean>
+	
+	<bean id="relatedDocumentsThreadPoolExecutor" class="org.alfresco.util.ThreadPoolExecutorFactoryBean">
+        <property name="poolName" value="relatedDocumentsThreadPool" />
+        <property name="corePoolSize" value="1" />
+        <property name="maximumPoolSize" value="5" />
+        <property name="threadPriority" value="5" />
+    </bean>
     	
 </beans>

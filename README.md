@@ -1,3 +1,4 @@
+
 esign-cert
 ==================
 Provides an Alfresco Share action for signing PDF files (PAdES-BES format) and any other file (CAdES-BES format detached) via java applet (@firma miniApplet, opensource at https://github.com/ctt-gob-es/clienteafirma) or local application AutoFirma by protocol (http://forja-ctt.administracionelectronica.gob.es/web/clienteafirma) where applets are not possible (i. e. Google Chrome).
@@ -63,6 +64,7 @@ Currently provided in English,Spanish and Macedonian.
 
 ***No original Alfresco resources have been overwritten***
 
+
 Downloading the ready-to-deploy-plugin
 --------------------------------------
 The binary distribution is made of two amp files:
@@ -72,6 +74,7 @@ The binary distribution is made of two amp files:
 
 You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
+
 Building the artifacts
 ----------------------
 If you are new to Alfresco and the Alfresco Maven SDK, you should start by reading [Jeff Potts' tutorial on the subject](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html).
@@ -79,11 +82,13 @@ If you are new to Alfresco and the Alfresco Maven SDK, you should start by readi
 You can build the artifacts from source code using maven
 ```$ mvn clean package```
 
+
 Signing the applet
 ------------------
 You can download plain applet from http://forja-ctt.administracionelectronica.gob.es/web/clienteafirma
 
 Oracle [jarsigner](http://docs.oracle.com/javase/7/docs/technotes/tools/windows/jarsigner.html) can be used to perform a signature on [miniapplet-full_1_4.jar](https://github.com/keensoft/alfresco-esign-cert/raw/master/esign-cert-share/src/main/amp/web/sign/miniapplet-full_1_4.jar). To deploy this change, just replace current JAR for your signed JAR and rebuild the artifacts.
+
 
 Running under SSL
 -----------------
@@ -100,6 +105,7 @@ For instance, Apache HTTP default configuration for SSL includes...
 ... and it should be set to **SAMEORIGIN** instead
 
 ```Header always set X-Frame-Options SAMEORIGIN```
+
 
 Configuration
 ----------------------
@@ -119,6 +125,7 @@ esign.cert.params.fifthSignaturePosition=signaturePage={page}\tsignaturePosition
 
 
 ```
+
 Usage
 ----------------------
 Every document is including a **Sign** action to perform a client signature depending on the mime type:
@@ -146,3 +153,9 @@ Pending features to be included (aka "wishlist"):
 * Signature verification
 * AdES signatures elevation
 * LTA integration
+
+## Contributors
+
+* Douglas CR Paes
+* Vasil Iliev
+* Pedro González
