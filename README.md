@@ -117,12 +117,12 @@ esign.cert.params.pades=signaturePage=1\tsignaturePositionOnPageLowerLeftX=120\t
 esign.cert.params.cades=mode=explicit
 # Signature algorithm: SHA1withRSA, SHA256withRSA, SHA384withRSA, SHA512withRSA
 esign.cert.signature.alg=SHA512withRSA
-esign.cert.params.firstSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=40\tsignaturePositionOnPageLowerLeftY=30\tsignaturePositionOnPageUpperRightX=130\tsignaturePositionOnPageUpperRightY=130\t
-esign.cert.params.secondSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=145\tsignaturePositionOnPageLowerLeftY=30\tsignaturePositionOnPageUpperRightX=235\tsignaturePositionOnPageUpperRightY=130\t
-esign.cert.params.thirdSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=250\tsignaturePositionOnPageLowerLeftY=30\tsignaturePositionOnPageUpperRightX=340\tsignaturePositionOnPageUpperRightY=130\t
-esign.cert.params.fourthSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=335\tsignaturePositionOnPageLowerLeftY=30\tsignaturePositionOnPageUpperRightX=445\tsignaturePositionOnPageUpperRightY=130\t
-esign.cert.params.fifthSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=460\tsignaturePositionOnPageLowerLeftY=30\tsignaturePositionOnPageUpperRightX=560\tsignaturePositionOnPageUpperRightY=130\t
-
+esign.cert.params.firstSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=50\tsignaturePositionOnPageLowerLeftY=45\tsignaturePositionOnPageUpperRightX=305\tsignaturePositionOnPageUpperRightY=69\t
+esign.cert.params.secondSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=310\tsignaturePositionOnPageLowerLeftY=45\tsignaturePositionOnPageUpperRightX=565\tsignaturePositionOnPageUpperRightY=69\t
+esign.cert.params.thirdSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=50\tsignaturePositionOnPageLowerLeftY=23\tsignaturePositionOnPageUpperRightX=305\tsignaturePositionOnPageUpperRightY=47\t
+esign.cert.params.fourthSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=310\tsignaturePositionOnPageLowerLeftY=23\tsignaturePositionOnPageUpperRightX=565\tsignaturePositionOnPageUpperRightY=47\t
+esign.cert.params.fifthSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=50\tsignaturePositionOnPageLowerLeftY=1\tsignaturePositionOnPageUpperRightX=305\tsignaturePositionOnPageUpperRightY=25\t
+esign.cert.params.sixthSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=310\tsignaturePositionOnPageLowerLeftY=1\tsignaturePositionOnPageUpperRightX=565\tsignaturePositionOnPageUpperRightY=25\t
 
 ```
 
@@ -142,7 +142,7 @@ Caducity: Tue 12 Apr 2016
 Issuer: OU=FNMT Clase 2 CA, O=FNMT, C=ES
 ```
 
-PDF files can be signed up to 5 times on 5 different positions. Once a PDF is signed in a certain position that position is no longer available for signing. The signatures positions are defined in **alfresco-global.properties**.
+PDF files can be signed up to 6 times on 6 different positions. Once a PDF is signed in a certain position that position is no longer available for signing. The signatures positions are defined in **alfresco-global.properties**.
 Todo
 ----------------------
 Pending features to be included (aka "wishlist"):
@@ -159,3 +159,4 @@ Pending features to be included (aka "wishlist"):
 * Douglas CR Paes
 * Vasil Iliev
 * Pedro GonzÃ¡lez
+* Alberto Ramírez
