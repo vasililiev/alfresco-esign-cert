@@ -48,6 +48,7 @@
             <value>sign:thirdSignature</value>
             <value>sign:fourthSignature</value>
             <value>sign:fifthSignature</value>
+            <value>sign:sixthSignature</value>
          </list>
       </property>
    </bean>

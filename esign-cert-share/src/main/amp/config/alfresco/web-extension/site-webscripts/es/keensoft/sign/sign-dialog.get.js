@@ -17,15 +17,17 @@ function main() {
 	model.thirdSignaturePosition = signatureParams.thirdSignaturePosition;
 	model.fourthSignaturePosition = signatureParams.fourthSignaturePosition;
 	model.fifthSignaturePosition = signatureParams.fifthSignaturePosition;
+	model.sixthSignaturePosition = signatureParams.sixthSignaturePosition;
 	
 	//Set available signature places
 	var aspects = jsonConnection("/slingshot/doclib/aspects/node/" + args.nodeRef.replace(":/", ""));
 	model.showOptionFirstSignature = (aspects.current.indexOf("sign:firstSignature") == -1);
 	model.showOptionSecondSignature = (aspects.current.indexOf("sign:secondSignature") == -1);
-	model.showOptionThridSignature = (aspects.current.indexOf("sign:thirdSignature") == -1);
+	model.showOptionThirdSignature = (aspects.current.indexOf("sign:thirdSignature") == -1);
 	model.showOptionFourthSignature = (aspects.current.indexOf("sign:fourthSignature") == -1);
+	model.showOptionFifthSignature = (aspects.current.indexOf("sign:fifthSignature") == -1);
+	model.showOptionSixthSignature = (aspects.current.indexOf("sign:sixthSignature") == -1);
 
-	
 	//Fill up the model with data
 	model.base64NodeContent = base64NodeContentResponse.base64NodeContent;
 	model.mimeType = args.mimeType;
