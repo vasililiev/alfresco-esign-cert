@@ -1,21 +1,14 @@
 package es.alfatec.alfresco.evaluators;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.web.evaluator.BaseEvaluator;
-import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONObject;
 import org.springframework.extensions.surf.RequestContext;
 import org.springframework.extensions.surf.ServletUtil;
 import org.springframework.extensions.surf.support.ThreadLocalRequestContext;
-import org.springframework.extensions.webscripts.ScriptRemote;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.connector.Connector;
 import org.springframework.extensions.webscripts.connector.Response;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.web.client.RequestCallback;
 
 public class SignOtherDocsEvaluator  extends BaseEvaluator{
 
@@ -67,10 +60,6 @@ public class SignOtherDocsEvaluator  extends BaseEvaluator{
 	
 		}
 			
-	}
-
-	public void setPropertyValue(String propertyValue) {
-		this.propertyValue = propertyValue;
 	}
 
 	public void setCaseSensitive(Boolean caseSensitive) {
