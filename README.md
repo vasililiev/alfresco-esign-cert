@@ -124,7 +124,6 @@ esign.cert.params.fourthSignaturePosition=signaturePage={page}\tsignaturePositio
 esign.cert.params.fifthSignaturePosition=signaturePage={page}\tsignaturePositionOnPageLowerLeftX=460\tsignaturePositionOnPageLowerLeftY=30\tsignaturePositionOnPageUpperRightX=560\tsignaturePositionOnPageUpperRightY=130\t
 # Property for disable sign other docs
 esign.cert.signOtherDocs=false
-
 ```
 
 Usage
@@ -143,7 +142,7 @@ Caducity: Tue 12 Apr 2016
 Issuer: OU=FNMT Clase 2 CA, O=FNMT, C=ES
 ```
 
-PDF files can be signed up to 5 times on 5 different positions. Once a PDF is signed in a certain position that position is no longer available for signing. The signatures positions are defined in **alfresco-global.properties**.
+PDF files can be signed up to 6 times on 6 different positions. Once a PDF is signed in a certain position that position is no longer available for signing. The signatures positions are defined in **alfresco-global.properties**.
 Todo
 ----------------------
 Pending features to be included (aka "wishlist"):

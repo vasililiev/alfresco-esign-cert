@@ -10,6 +10,7 @@ public class SignatureParamsResponse {
 	private String thirdSignaturePosition;
 	private String fourthSignaturePosition;
 	private String fifthSignaturePosition;
+	private String sixthSignaturePosition;
 	
 	public String getParamsCades() {
 		return paramsCades;
@@ -61,5 +62,12 @@ public class SignatureParamsResponse {
 	public void setFifthSignaturePosition(String fifthSignaturePosition) {
 		this.fifthSignaturePosition = fifthSignaturePosition;
 	}
+	public String getSixthSignaturePosition() {
+		return sixthSignaturePosition;
+	}
+	public void setSixthSignaturePosition(String sixthSignaturePosition) {
+		this.sixthSignaturePosition = sixthSignaturePosition;
+	}
+
 
 }
