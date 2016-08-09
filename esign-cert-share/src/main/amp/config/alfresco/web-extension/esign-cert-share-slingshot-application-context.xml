@@ -39,7 +39,7 @@
 		</property>
 	</bean>
 	
-	<bean id="evaluator.doclib.action.signOtherDocs" class="es.alfatec.evaluators.SignOtherDocsEvaluator">
+	<bean id="evaluator.doclib.action.signOtherDocs" class="es.alfatec.alfresco.evaluators.SignOtherDocsEvaluator">
 		<property name="caseSensitive" value="false"></property>
 	</bean>
 
