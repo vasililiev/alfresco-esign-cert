@@ -17,13 +17,18 @@
 						<#if showOptionSecondSignature>
 						<option value="sig2">${msg("select.sig2")}</option>
 						</#if>
-						<#if showOptionThridSignature>
+						<#if showOptionThirdSignature>
 						<option value="sig3">${msg("select.sig3")}</option>
 						</#if>
 						<#if showOptionFourthSignature>
 						<option value="sig4">${msg("select.sig4")}</option>
 						</#if>
+						<#if showOptionFifthSignature>
 						<option value="sig5">${msg("select.sig5")}</option>
+						</#if>
+						<#if showOptionSixthSignature>
+						<option value="sig6">${msg("select.sig6")}</option>
+						</#if>
 					</select>
 				</div>
 				<div style="width: 50%;  display: inline-block">
@@ -68,6 +73,7 @@
 	      			"thirdPosition": "${thirdSignaturePosition}".replace(" ", "\t"),
 	      			"fourthPosition": "${fourthSignaturePosition}".replace(" ", "\t"),
 	      			"fifthPosition": "${fifthSignaturePosition}".replace(" ", "\t"),
+	      			"sixthPosition": "${sixthSignaturePosition}".replace(" ", "\t"),
 	      		};
 	      		var page = "last_page";
 	      		var documentMimetype = "${mimeType}";
@@ -111,6 +117,11 @@
 	      			{
 	      				finalSignaturePosition = options.fifthPosition;
 	      				YAHOO.util.Dom.get("signerPostition").value = "5";
+	      			}
+	      			else if(position == "sig6")
+	      			{
+	      				finalSignaturePosition = options.sixthPosition;
+	      				YAHOO.util.Dom.get("signerPostition").value = "6";
 	      			}
 	      			
 	      			if(pageSelect == "first")
