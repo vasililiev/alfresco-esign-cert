@@ -47,7 +47,7 @@ public class CustomBehaviour implements
 				NotificationFrequency.TRANSACTION_COMMIT));
 		policyComponent.bindClassBehaviour(
 		        NodeServicePolicies.OnCreateNodePolicy.QNAME,
-		        ContentModel.PROP_CONTENT,
+		        ContentModel.TYPE_CONTENT,
 		        new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT)
 		    );
 	}
@@ -60,7 +60,7 @@ public class CustomBehaviour implements
 		if (nodeService.exists(node)) {
 			ContentData contentData = (ContentData) nodeService.getProperty(node, ContentModel.PROP_CONTENT);
 			// Do this check only if the uploaded document is a PDF
-			if (contentData.getMimetype().equalsIgnoreCase("application/pdf")) {
+			if (contentData != null && contentData.getMimetype().equalsIgnoreCase("application/pdf")) {
 				ArrayList<Map<QName, Serializable>> signatures = getDigitalSignatures(node);
 				if(signatures != null) {
 					for(Map<QName, Serializable> aspectProperties : signatures) {
