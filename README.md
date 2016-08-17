@@ -161,3 +161,4 @@ Pending features to be included (aka "wishlist"):
 * Douglas CR Paes
 * Vasil Iliev
 * Pedro González
+* Alberto Ramírez Losilla
