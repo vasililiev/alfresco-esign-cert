@@ -161,7 +161,4 @@ Pending features to be included (aka "wishlist"):
 * Douglas CR Paes
 * Vasil Iliev
 * Pedro Gonz√°lez
-<<<<<<< a915d54bab9d2627643cecf89500fde0e4686466
 * Alberto RamÌrez
-=======
->>>>>>> New property #Property for disable sign other docs
