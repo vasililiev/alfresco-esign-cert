@@ -52,7 +52,7 @@ This module uses a software digital certificate or a cryptographic hardware supp
 The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). 
 
 **State**
-Current addon release 1.0.0 is ***PROD***
+Current addon release 1.2.1 is ***PROD***
 
 **Compatibility**
 The current version has been developed using Alfresco 5.1 and Alfresco SDK 2.1.1, although it should run in Alfresco 5.0.d and Alfresco 5.0.c
