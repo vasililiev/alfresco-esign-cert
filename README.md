@@ -60,7 +60,7 @@ The current version has been developed using Alfresco 5.1 and Alfresco SDK 2.1.1
 Browser compatibility: 100% supported (refer previous paragraph)
 
 **Languages**
-Currently provided in English,Spanish and Macedonian.
+Currently provided in English,Spanish, Macedonian and Brazilian Portuguese.
 
 ***No original Alfresco resources have been overwritten***
 
@@ -158,7 +158,7 @@ Pending features to be included (aka "wishlist"):
 
 ## Contributors
 
-* Douglas CR Paes
+* Douglas C. R. Paes
 * Vasil Iliev
 * Pedro González
 * Alberto Ramírez Losilla
