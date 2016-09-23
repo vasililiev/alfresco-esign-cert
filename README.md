@@ -14,7 +14,7 @@ java -jar alfresco-mmt.jar uninstall sign-document-share ../tomcat/webapps/share
 
 ## esign-cert features
 
-**AutoFirma** local application for computers is currently supported only for Windows, but Mac OS and Linux versions are on the roadmap. This Windows application shall be installed before using the addon.
+**AutoFirma** local application for computers is currently supported only for Windows, Mac OS and Linux. Available at [AutoFirma](http://firmaelectronica.gob.es/Home/Descargas.html)
 
 **Cliente movil @firma** local application for devices is currently supported for iOS and Android:
 * Google Play - [Cliente movil @firma](https://play.google.com/store/apps/details?id=es.gob.afirma)
@@ -31,11 +31,11 @@ Windows
 Mac OS 
 * Mozilla Firefox: Applet
 * Apple Safari: Applet
-* Google Chrome: Local application (not yet available)
+* Google Chrome: Local application
 
 Linux Ubuntu
 * Mozilla Firefox: Applet
-* Google Chrome: Local application (not yet available)
+* Google Chrome: Local application
 
 iOS
 * Apple Safari: Local application
@@ -52,10 +52,10 @@ This module uses a software digital certificate or a cryptographic hardware supp
 The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). 
 
 **State**
-Current addon release 1.2.1 is ***PROD***
+Current addon release 1.2.2 is ***PROD***
 
 **Compatibility**
-The current version has been developed using Alfresco 5.1 and Alfresco SDK 2.1.1, although it should run in Alfresco 5.0.d and Alfresco 5.0.c
+The current version has been developed using Alfresco 5.0.d and Alfresco SDK 2.1.1, although it runs in Alfresco 5.1.x
 
 Browser compatibility: 100% supported (refer previous paragraph)
 
@@ -69,8 +69,8 @@ Downloading the ready-to-deploy-plugin
 --------------------------------------
 The binary distribution is made of two amp files:
 
-* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.0.0/esign-cert-repo.amp)
-* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.0.0/esign-cert-share.amp)
+* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.2.2/esign-cert-repo.amp)
+* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.2.2/esign-cert-share.amp)
 
 You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
