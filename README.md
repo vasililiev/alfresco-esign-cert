@@ -31,7 +31,7 @@ Windows
 Mac OS 
 * Mozilla Firefox: Applet
 * Apple Safari: Applet
-* Google Chrome: Local application
+* Google Chrome: Local application (currently not working)
 
 Linux Ubuntu
 * Mozilla Firefox: Applet
