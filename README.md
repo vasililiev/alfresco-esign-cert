@@ -52,7 +52,7 @@ This module uses a software digital certificate or a cryptographic hardware supp
 The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). 
 
 **State**
-Current addon release 1.2.3 is ***PROD***
+Current addon release 1.3.0 is ***PROD***
 
 **Compatibility**
 The current version has been developed using Alfresco 5.0.d and Alfresco SDK 2.1.1, although it runs in Alfresco 5.1.x
@@ -69,8 +69,8 @@ Downloading the ready-to-deploy-plugin
 --------------------------------------
 The binary distribution is made of two amp files:
 
-* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.2.3/esign-cert-repo.amp)
-* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.2.3/esign-cert-share.amp)
+* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.3.0/esign-cert-repo.amp)
+* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.3.0/esign-cert-share.amp)
 
 You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
@@ -132,6 +132,9 @@ esign.cert.params.sixthSignaturePosition=signaturePage={page}\tsignaturePosition
 
 # Property for disable sign other docs
 esign.cert.signOtherDocs=false
+
+# Sign Purpose (Default enabled=false)
+esign.cert.params.signPurpose.enabled=false
 ```
 
 
@@ -152,6 +155,7 @@ Issuer: OU=FNMT Clase 2 CA, O=FNMT, C=ES
 ```
 
 PDF files can be signed up to 6 times on 6 different positions. Once a PDF is signed in a certain position that position is no longer available for signing. The signatures positions are defined in **alfresco-global.properties**.
+
 Todo
 ----------------------
 Pending features to be included (aka "wishlist"):
@@ -165,7 +169,9 @@ Pending features to be included (aka "wishlist"):
 
 ## Contributors
 
+* Daniel E. Fernández
 * Douglas C. R. Paes
 * Vasil Iliev
 * Pedro González
 * Alberto Ramírez Losilla
+* Mikel Asla
