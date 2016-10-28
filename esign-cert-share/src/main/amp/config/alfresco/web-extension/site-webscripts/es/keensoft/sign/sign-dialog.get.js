@@ -18,6 +18,7 @@ function main() {
 	model.fourthSignaturePosition = signatureParams.fourthSignaturePosition;
 	model.fifthSignaturePosition = signatureParams.fifthSignaturePosition;
 	model.sixthSignaturePosition = signatureParams.sixthSignaturePosition;
+	model.signaturePurposeEnabled = signatureParams.signaturePurposeEnabled;
 	
 	//Set available signature places
 	var aspects = jsonConnection("/slingshot/doclib/aspects/node/" + args.nodeRef.replace(":/", ""));

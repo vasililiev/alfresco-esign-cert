@@ -11,6 +11,7 @@ public class SignatureParamsResponse {
 	private String fourthSignaturePosition;
 	private String fifthSignaturePosition;
 	private String sixthSignaturePosition;
+	private boolean signaturePurposeEnabled;
 	
 	public String getParamsCades() {
 		return paramsCades;
@@ -68,6 +69,11 @@ public class SignatureParamsResponse {
 	public void setSixthSignaturePosition(String sixthSignaturePosition) {
 		this.sixthSignaturePosition = sixthSignaturePosition;
 	}
-
+	public boolean isSignaturePurposeEnabled() {
+		return signaturePurposeEnabled;
+	}
+	public void setSignaturePurposeEnabled(boolean signaturePurposeEnabled) {
+		this.signaturePurposeEnabled = signaturePurposeEnabled;
+	}
 
 }
