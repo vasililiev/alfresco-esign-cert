@@ -69,8 +69,8 @@ Downloading the ready-to-deploy-plugin
 --------------------------------------
 The binary distribution is made of two amp files:
 
-* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.3.0/esign-cert-repo.amp)
-* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.3.0/esign-cert-share.amp)
+* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.3.1/esign-cert-repo.amp)
+* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.3.1/esign-cert-share.amp)
 
 You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
