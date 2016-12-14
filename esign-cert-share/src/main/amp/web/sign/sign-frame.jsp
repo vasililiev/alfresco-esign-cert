@@ -10,14 +10,17 @@
 	    MiniApplet.cargarMiniApplet('<%=request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()%>/sign');
 	    
 	    var signatureAlg = '<%=request.getParameter("signatureAlg")%>';
-	    var signaturePurpose = '<%=request.getParameter("signReason")%>';
+	    var signaturePurpose = null;
+        <% if (request.getParameter("signReason") != null) { %>
+	        signaturePurpose = '<%=request.getParameter("signReason")%>';
+        <% } %>
 	    	    
 	    <% if (request.getParameter("mimeType").equals("pdf")) { %>
 	    
 	        var str = '<%=request.getParameter("paramsPades")%>';
 	        str = str.split('\t').join('\n');
 	        
-	        if(signaturePurpose)
+	        if (signaturePurpose)
 	        {
 	        	str = str.concat('\nsignReason=' + unicodeEscape(signaturePurpose));
 	        }
