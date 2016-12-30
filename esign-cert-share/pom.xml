@@ -39,7 +39,7 @@
         <app.amp.client.war.artifactId>${alfresco.share.artifactId}</app.amp.client.war.artifactId>
 
         <!-- Since Alfresco.WAR (i.e. the Repository) is already running on port 8080, we run Share.WAR on port 8081 -->
-        <maven.tomcat.port>8081</maven.tomcat.port>
+        <maven.tomcat.port>8082</maven.tomcat.port>
 
         <!-- Used in share-config-custom.xml. By default points to local installation of Alfresco Repo -->
         <alfresco.repo.url>http://localhost:8080/alfresco</alfresco.repo.url>

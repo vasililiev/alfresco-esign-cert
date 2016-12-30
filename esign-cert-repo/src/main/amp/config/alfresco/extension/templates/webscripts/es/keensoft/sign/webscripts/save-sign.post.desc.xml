@@ -7,6 +7,6 @@
 	<url>/keensoft/sign/save-sign</url>
 	<url>/keensoft/sign/save-sign.json</url>
 	<format default="json">any</format>
-	<authentication>user</authentication>
+	<authentication runas="admin">user</authentication>
 	<transaction>required</transaction>
 </webscript>
