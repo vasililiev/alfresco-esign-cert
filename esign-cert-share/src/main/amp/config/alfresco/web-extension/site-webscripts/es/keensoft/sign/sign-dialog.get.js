@@ -1,13 +1,13 @@
 function main() {
 	
-	//Get Base64 content
+	// Get Base64 content
 	var base64NodeContentResponse = jsonConnection("/keensoft/sign/base64-node-content?nodeRef=" + args.nodeRef);
 	if(base64NodeContentResponse == null) {
 		model.jsonError = true;
 		return;
 	}
 	
-	//Get signature parameters
+	// Get signature parameters
 	var signatureParams = jsonConnection("/keensoft/sign/signature-params");
 	model.paramsPades = signatureParams.paramsPades;
 	model.paramsCades = signatureParams.paramsCades;
@@ -20,7 +20,15 @@ function main() {
 	model.sixthSignaturePosition = signatureParams.sixthSignaturePosition;
 	model.signaturePurposeEnabled = signatureParams.signaturePurposeEnabled;
 	
-	//Set available signature places
+	// Detect if no position selection is configured
+	model.signaturePosition = model.firstSignaturePosition != "" ||
+	    model.secondSignaturePosition != "" ||
+	    model.thirdSignaturePosition != "" ||
+	    model.fourthSignaturePosition != "" ||
+	    model.fifthSignaturePosition != "" ||
+	    model.sixthSignaturePosition != "";
+	
+	// Set available signature places
 	var aspects = jsonConnection("/slingshot/doclib/aspects/node/" + args.nodeRef.replace(":/", ""));
 	model.showOptionFirstSignature = (aspects.current.indexOf("sign:firstSignature") == -1);
 	model.showOptionSecondSignature = (aspects.current.indexOf("sign:secondSignature") == -1);
@@ -29,7 +37,7 @@ function main() {
 	model.showOptionFifthSignature = (aspects.current.indexOf("sign:fifthSignature") == -1);
 	model.showOptionSixthSignature = (aspects.current.indexOf("sign:sixthSignature") == -1);
 
-	//Fill up the model with data
+	// Fill up the model with data
 	model.base64NodeContent = base64NodeContentResponse.base64NodeContent;
 	model.mimeType = args.mimeType;
 	model.nodeRef = args.nodeRef;

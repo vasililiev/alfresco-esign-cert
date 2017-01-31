@@ -52,7 +52,7 @@ This module uses a software digital certificate or a cryptographic hardware supp
 The plugin is licensed under the [LGPL v3.0](http://www.gnu.org/licenses/lgpl-3.0.html). 
 
 **State**
-Current addon release 1.5.0 is ***PROD***
+Current addon release 1.5.1 is ***PROD***
 
 **Compatibility**
 The current version has been developed using Alfresco 5.0.d and Alfresco SDK 2.1.1, although it runs in Alfresco 5.1.x
@@ -69,8 +69,8 @@ Downloading the ready-to-deploy-plugin
 --------------------------------------
 The binary distribution is made of two amp files:
 
-* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.5.0/esign-cert-repo.amp)
-* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.5.0/esign-cert-share.amp)
+* [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.5.1/esign-cert-repo.amp)
+* [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.5.1/esign-cert-share.amp)
 
 You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
 
@@ -117,6 +117,8 @@ Configuration
 ----------------------
 Before installation, following properties must be included in **alfresco-global.properties**
 
+**Sample configuration 1**
+
 ```
 # Native @firma parameters separated by tab (\t)
 esign.cert.params.pades=signaturePage=1\tsignaturePositionOnPageLowerLeftX=120\tsignaturePositionOnPageLowerLeftY=50\tsignaturePositionOnPageUpperRightX=220\tsignaturePositionOnPageUpperRightY=150\t
@@ -137,6 +139,29 @@ esign.cert.signOtherDocs=false
 esign.cert.params.signPurpose.enabled=false
 ```
 
+If no signature position selection form is required, `signaturePosition` properties must be declared blank. PDF signature will be performed by using `esign.cert.params.pades` in this scenario.
+
+**Sample configuration 2**
+
+```
+# Native @firma parameters separated by tab (\t)
+esign.cert.params.pades=signaturePage=1\tsignaturePositionOnPageLowerLeftX=120\tsignaturePositionOnPageLowerLeftY=50\tsignaturePositionOnPageUpperRightX=220\tsignaturePositionOnPageUpperRightY=150\t
+esign.cert.params.cades=mode=explicit
+# Signature algorithm: SHA1withRSA, SHA256withRSA, SHA384withRSA, SHA512withRSA
+esign.cert.signature.alg=SHA512withRSA
+esign.cert.params.firstSignaturePosition=
+esign.cert.params.secondSignaturePosition=
+esign.cert.params.thirdSignaturePosition=
+esign.cert.params.fourthSignaturePosition=
+esign.cert.params.fifthSignaturePosition=
+esign.cert.params.sixthSignaturePosition=
+
+# Property for disable sign other docs
+esign.cert.signOtherDocs=false
+
+# Sign Purpose (Default enabled=false)
+esign.cert.params.signPurpose.enabled=false
+```
 
 Usage
 ----------------------
