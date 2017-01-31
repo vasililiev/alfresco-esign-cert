@@ -2,51 +2,55 @@
    <div class="hd">${msg("window.title")}</div>
    <div class="bd">
      	<#if !jsonError>
-		    <div id="info" class="yui-gd" style="padding:30px;text-align:justify;">
-				<div id="loading-text" style="display:none;">${msg("document.ready")}</div>
-				<div id="loading" style="text-align:center; display: none;">
-					<img src="/share/sign/icon.gif" >
-				</div>
-				<#if mimeType == "pdf">
-				<div style="width: 50%; float:left; display: inline-block">
-					<div id="position-text">${msg("document.position")}</div>
-					<select id="signaturePlace" style="width: 95%;">
-						<#if showOptionFirstSignature>
-						<option value="sig1">${msg("select.sig1")}</option>
-						</#if>
-						<#if showOptionSecondSignature>
-						<option value="sig2">${msg("select.sig2")}</option>
-						</#if>
-						<#if showOptionThirdSignature>
-						<option value="sig3">${msg("select.sig3")}</option>
-						</#if>
-						<#if showOptionFourthSignature>
-						<option value="sig4">${msg("select.sig4")}</option>
-						</#if>
-						<#if showOptionFifthSignature>
-						<option value="sig5">${msg("select.sig5")}</option>
-						</#if>
-						<#if showOptionSixthSignature>
-						<option value="sig6">${msg("select.sig6")}</option>
-						</#if>
-					</select>
-				</div>
-				<div style="width: 50%;  display: inline-block">
-					<div id="pageTitle">${msg("page")}</div>
-					<select id="signaturePage" style="width: 95%;">
-						<option value="last">${msg("page.last")}</option>
-						<option value="first">${msg("page.first")}</option>
-					</select>
-				</div>
-				<#if signaturePurposeEnabled>
-				<div style="width: 90%;  display: inline-block; padding-top: 10px">
-					<div id="purposeTitle">${msg("purpose")}</div>
-					<textarea id="signaturePurposeText" name="signaturePurposeText" tabindex="0" rows="1" cols="50" style="width: 107%; height: 20px"></textarea>
-				</div>
-				</#if>
-				</#if>
-				<div id="sign-component" style="width:100%;"></div>
+     	
+			<div id="loading-text" style="display:none;">${msg("document.ready")}</div>
+			<div id="loading" style="text-align:center; display: none;">
+				<img src="/share/sign/icon.gif" >
 			</div>
+					
+		    <div id="info" class="yui-gd" style="padding:30px;text-align:justify;">
+				<#if mimeType == "pdf" && signaturePosition>
+					<div style="width: 50%; float:left; display: inline-block">
+						<div id="position-text">${msg("document.position")}</div>
+						<select id="signaturePlace" style="width: 95%;">
+							<#if showOptionFirstSignature>
+							<option value="sig1">${msg("select.sig1")}</option>
+							</#if>
+							<#if showOptionSecondSignature>
+							<option value="sig2">${msg("select.sig2")}</option>
+							</#if>
+							<#if showOptionThirdSignature>
+							<option value="sig3">${msg("select.sig3")}</option>
+							</#if>
+							<#if showOptionFourthSignature>
+							<option value="sig4">${msg("select.sig4")}</option>
+							</#if>
+							<#if showOptionFifthSignature>
+							<option value="sig5">${msg("select.sig5")}</option>
+							</#if>
+							<#if showOptionSixthSignature>
+							<option value="sig6">${msg("select.sig6")}</option>
+							</#if>
+						</select>
+					</div>
+					<div style="width: 50%;  display: inline-block">
+						<div id="pageTitle">${msg("page")}</div>
+						<select id="signaturePage" style="width: 95%;">
+							<option value="last">${msg("page.last")}</option>
+							<option value="first">${msg("page.first")}</option>
+						</select>
+					</div>
+					<#if signaturePurposeEnabled>
+					<div style="width: 90%;  display: inline-block; padding-top: 10px">
+						<div id="purposeTitle">${msg("purpose")}</div>
+						<textarea id="signaturePurposeText" name="signaturePurposeText" tabindex="0" rows="1" cols="50" style="width: 107%; height: 20px"></textarea>
+					</div>
+					</#if>
+				</#if>
+			</div>
+			
+			<div id="sign-component" style="width:100%;"></div>
+					
 			<form id="signDialog-form" action="" method="POST">
 				<input type="hidden" id="dataToSign" name="dataToSign" value="${base64NodeContent}" />
 				<input type="hidden" id="signedData" name="signedData" value="" />
@@ -56,24 +60,25 @@
 				<input type="hidden" id="nodeRef" name="nodeRef" value="${nodeRef}" />
 				<input type="hidden" id="signerPostition" name="signerPostition" value="" />
 				<#if signaturePurposeEnabled>
-				<input type="hidden" id="signaturePurpose" name="signaturePurpose" value="" />
+				    <input type="hidden" id="signaturePurpose" name="signaturePurpose" value="" />
 				</#if>
 	         	<div class="bdft" style="display:none;">
 		         	<input type="button" id="signDialog-ok" value="${msg("button.ok")}" />
 		         	<input type="button" id="signDialog-cancel" value="${msg("button.cancel")}" />
 		         </div>
 		    </form>
-			<#if mimeType == "pdf">
-		    <div id="button-div" class="bdft">
-		        <button type="button"
-		         	id="signPosition-TMPok"
-		         	class="yui-skin-lightTheme yui-button yui-skin-lightTheme"
-		         	value="${msg("button.sign")}"
-		         	style="height: 30px;min-width: 70px;margin: 2px;border: 1px solid #ccc;"
-		         	onclick="chosePosition()">${msg("button.sign")}</button>
-	        </div>
+			<#if mimeType == "pdf" && signaturePosition>
+			    <div id="button-div" class="bdft">
+			        <button type="button"
+			         	id="signPosition-TMPok"
+			         	class="yui-skin-lightTheme yui-button yui-skin-lightTheme"
+			         	value="${msg("button.sign")}"
+			         	style="height: 30px;min-width: 70px;margin: 2px;border: 1px solid #ccc;"
+			         	onclick="chosePosition()">${msg("button.sign")}</button>
+		        </div>
 		    </#if>
 	      	<script type="text/javascript">//<![CDATA[
+	      	 
 	      		var finalSignaturePosition = "${paramsPades}".replace(" ", "\t");
 	      		var options = {
 	      			"default": "${paramsPades}".replace(" ", "\t"),
@@ -86,12 +91,13 @@
 	      		};
 	      		var page = "last_page";
 	      		var documentMimetype = "${mimeType}";
+	      		var signatureSelectionEnabled = ${signaturePosition?c} || ${signaturePurposeEnabled?c};
 
 	      		var running = false;
 	      		var loadingSignComponentInterval = null;
 	      		var loadingFrameInterval = null;
 	      		var signaturePurposeValue = null;
-
+	      		
 	      		function chosePosition() {
 	      			var position = YAHOO.util.Dom.get("signaturePlace").value;
 	      			var pageSelect = YAHOO.util.Dom.get("signaturePage").value;
@@ -168,7 +174,7 @@
                     submitButton.click();
                 }
 
-	      		if(documentMimetype != "pdf") {
+	      		if(documentMimetype != "pdf" || !signatureSelectionEnabled) {
 	      			var waitToLoadDOM = setInterval(function() {
 	      				if(YAHOO.util.Dom.get("loading-text") != undefined) {
 	      					clearInterval(waitToLoadDOM);
