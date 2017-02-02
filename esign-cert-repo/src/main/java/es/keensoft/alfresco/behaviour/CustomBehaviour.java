@@ -25,6 +25,8 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfPKCS7;
@@ -35,6 +37,8 @@ import es.keensoft.alfresco.model.SignModel;
 public class CustomBehaviour implements 
     NodeServicePolicies.OnDeleteAssociationPolicy, 
     NodeServicePolicies.OnCreateNodePolicy {
+	
+	private static Log logger = LogFactory.getLog(CustomBehaviour.class);
 	
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
@@ -128,7 +132,11 @@ public class CustomBehaviour implements
 			return aspects;
 			
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			
+			logger.error("No signature found!", e);
+			return null;
+			
+			// WARN: Do not throw this exception up, as it will break WedDAV PDF files uploading 
 		}
 	}
 	
