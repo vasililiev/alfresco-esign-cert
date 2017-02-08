@@ -26,7 +26,7 @@ Windows
 * IE Edge: not supported by now
 * IE Classic: Local application / Applet
 * Google Chrome: Local application
-* Mozilla Firefox: Local application / Applet
+* Mozilla Firefox: Local application
 
 Mac OS 
 * Mozilla Firefox: Applet
@@ -34,7 +34,7 @@ Mac OS
 * Google Chrome: Local application (currently not working)
 
 Linux Ubuntu
-* Mozilla Firefox: Applet
+* Mozilla Firefox: Local application
 * Google Chrome: Local application
 
 iOS
