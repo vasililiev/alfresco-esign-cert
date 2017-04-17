@@ -72,7 +72,7 @@ The binary distribution is made of two amp files:
 * [repo AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.5.1/esign-cert-repo.amp)
 * [share AMP](https://github.com/keensoft/alfresco-esign-cert/releases/download/1.5.1/esign-cert-share.amp)
 
-You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/dev-extensions-tutorials-simple-module-install-amp.html)
+You can install them by using standard [Alfresco deployment tools](http://docs.alfresco.com/community/tasks/amp-install.html)
 
 
 Building the artifacts
