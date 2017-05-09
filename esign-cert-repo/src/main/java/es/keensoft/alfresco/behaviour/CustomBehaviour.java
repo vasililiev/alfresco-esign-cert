@@ -1,5 +1,6 @@
 package es.keensoft.alfresco.behaviour;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.KeyStore;
@@ -104,10 +105,12 @@ public class CustomBehaviour implements
 	
 	public ArrayList<Map<QName, Serializable>> getDigitalSignatures(NodeRef node) {
 		
+		InputStream is = null;
+		
 		try {
 		
 			ContentReader contentReader = contentService.getReader(node, ContentModel.PROP_CONTENT);
-			InputStream is = contentReader.getContentInputStream();
+			is = contentReader.getContentInputStream();
 			
 			// For SHA-256 and upper
 			loadBCProvider();
@@ -132,11 +135,21 @@ public class CustomBehaviour implements
 	    	    aspectSignatureProperties.put(SignModel.PROP_CERTIFICATE_ISSUER, certificate.getIssuerX500Principal().toString());   
 	    	    aspects.add(aspectSignatureProperties);
 	        }
+	        
+	        // As this verification can be included in a massive operation, closing files is required
+	        is.close();
+	        
 			return aspects;
 			
 		} catch (Exception e) {
 			
-			logger.error("No signature found!", e);
+			// Closing stream (!)
+			try {
+			    if (is != null) is.close();
+			} catch (IOException ioe) {}
+			
+			// Not every PDF has a signature inside
+			logger.warn("No signature found!", e);
 			return null;
 			
 			// WARN: Do not throw this exception up, as it will break WedDAV PDF files uploading 
