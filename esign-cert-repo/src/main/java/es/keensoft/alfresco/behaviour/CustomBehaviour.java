@@ -63,10 +63,15 @@ public class CustomBehaviour implements
 	public void onCreateNode(ChildAssociationRef childNodeRef) {
 
 		NodeRef node = childNodeRef.getChildRef();
+		
+		if(!nodeService.exists(node)) {
+			return; 
+		}
+		
 		// if onCreateNode the document hasSignedAspect, the document is being copied inside alfresco 
 		boolean hasSignedAspect = nodeService.hasAspect(node, SignModel.ASPECT_SIGNED);
 		
-		if (nodeService.exists(node) && !hasSignedAspect) {
+		if (!hasSignedAspect) {
 			ContentData contentData = (ContentData) nodeService.getProperty(node, ContentModel.PROP_CONTENT);
 			// Do this check only if the uploaded document is a PDF
 			if (contentData != null && contentData.getMimetype().equalsIgnoreCase("application/pdf")) {
